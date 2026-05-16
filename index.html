@@ -38,7 +38,7 @@
             overflow: hidden;
         }
 
-        /* --- SPLASH SCREEN (Görsel 479) --- */
+        /* --- SPLASH SCREEN --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -117,7 +117,7 @@
         @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
         @keyframes pulse { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
 
-        /* --- AUTH CONTAINERS (Görsel 483 Birebir Stil) --- */
+        /* --- AUTH CONTAINERS (Giriş / Kayıt Olma Alanı) --- */
         .auth-container {
             position: fixed;
             top: 0;
@@ -138,10 +138,10 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             color: white;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .brand-header i {
@@ -194,6 +194,7 @@
             position: relative;
             display: flex;
             align-items: center;
+            width: 100%;
         }
 
         .form-group input {
@@ -245,12 +246,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background-color: transparent;
         }
 
         .captcha-checkbox.checked {
             background-color: #009688;
             border-color: #009688;
-            color: white;
         }
 
         .captcha-text {
@@ -280,7 +281,7 @@
             background-color: var(--accent-color);
             color: #111214;
             border: none;
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             font-weight: 700;
             font-size: 15px;
@@ -306,13 +307,14 @@
             color: var(--accent-color);
             text-decoration: none;
             cursor: pointer;
+            font-weight: 600;
         }
 
         .auth-link:hover {
             text-decoration: underline;
         }
 
-        /* --- ANA UYGULAMA DUZENI (Görsel 481) --- */
+        /* --- MAIN APP LAYOUT --- */
         #app-container {
             display: none;
             flex: 1;
@@ -335,7 +337,7 @@
             height: 100%;
         }
 
-        /* Sol Bar */
+        /* Sol Sunucu Listesi */
         .servers-sidebar {
             width: 72px;
             background-color: var(--bg-dark-main);
@@ -366,7 +368,7 @@
             color: #111214;
         }
 
-        /* Kanallar Side barı */
+        /* Kanal Listesi Barı */
         .channels-sidebar {
             width: 240px;
             background-color: var(--bg-dark-secondary);
@@ -419,7 +421,7 @@
             font-weight: 600;
         }
 
-        /* Alt Profil Bölümü (Görsel 481 Birebir) */
+        /* Alt Profil Bölümü */
         .user-profile-footer {
             height: 52px;
             background-color: rgba(0,0,0,0.15);
@@ -494,7 +496,7 @@
 
         .profile-actions i:hover { color: white; }
 
-        /* Sohbet Alanı */
+        /* Chat Alanı */
         .chat-area {
             flex: 1;
             background-color: var(--bg-chat);
@@ -558,7 +560,7 @@
             font-size: 15px;
         }
 
-        /* --- AYARLAR SAYFASI (Görsel 480) --- */
+        /* Ayarlar Menüsü */
         .settings-page {
             background-color: var(--bg-dark-secondary);
             flex-direction: column;
@@ -621,7 +623,7 @@
             cursor: pointer;
         }
 
-        /* --- SABİT ALT GEZİNTİ BARBARI --- */
+        /* Alt Navigasyon */
         .bottom-navigation {
             display: none;
             height: 60px;
@@ -684,14 +686,14 @@
             
             <div class="form-group">
                 <label>Kullanıcı Adı</label>
-                <input type="text" id="login-username" placeholder="Kullanıcı adınızı yazın...">
+                <input type="text" id="login-username" placeholder="Kullanıcı adınızı yazın..." autocomplete="off">
             </div>
             
             <div class="form-group">
                 <label>Şifre</label>
                 <div class="input-wrapper">
                     <input type="password" id="login-password" placeholder="••••••••">
-                    <i data-lucide="eye" class="password-toggle" id="toggle-login-pass" onclick="togglePassVisibility('login-password', 'toggle-login-pass')"></i>
+                    <i data-lucide="eye" class="password-toggle" id="toggle-login-pass" onclick="togglePassVisibility('login-password')"></i>
                 </div>
             </div>
 
@@ -724,4 +726,5 @@
         <div class="brand-subtitle">Aramıza katıl!</div>
         <div class="auth-card">
             <h2>Hesap oluştur</h2>
-            <div class="card-desc">Yeni bir LunaHub hesabı açın<
+            <div class="card-desc">Yeni bir LunaHub hesabı açın</div>
+      
