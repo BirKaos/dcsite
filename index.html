@@ -6,13 +6,12 @@
     <title>LunaHub</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Tam Uyumlu Renk Paleti */
         :root {
             --bg-dark-main: #111214;
             --bg-dark-secondary: #1e1f22;
             --bg-dark-tertiary: #2b2d31;
             --bg-chat: #313338;
-            --accent-color: #12f3ca; /* Ekran görüntüsündeki canlı turkuaz */
+            --accent-color: #12f3ca; 
             --accent-hover: #0ed6b2;
             --text-main: #dbdee1;
             --text-muted: #949ba4;
@@ -38,86 +37,7 @@
             overflow: hidden;
         }
 
-        /* --- SPLASH SCREEN --- */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-dark-secondary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        .splash-logo {
-            width: 85px;
-            height: 85px;
-            background: var(--premium-gradient);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 38px;
-            color: white;
-            box-shadow: 0 8px 30px rgba(18, 243, 202, 0.25);
-            margin-bottom: 24px;
-        }
-
-        .splash-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        .loading-bar-container {
-            width: 220px;
-            height: 4px;
-            background-color: var(--bg-dark-main);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .loading-bar {
-            width: 0%;
-            height: 100%;
-            background-color: var(--accent-color);
-            animation: load 1.5s forwards ease-in-out;
-        }
-
-        .loading-status {
-            color: var(--accent-color);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .loading-dots {
-            display: flex;
-            gap: 6px;
-            margin-top: 24px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-color);
-            border-radius: 50%;
-            opacity: 0.4;
-        }
-        .dot:nth-child(1) { animation: pulse 0.6s infinite alternate; }
-        .dot:nth-child(2) { animation: pulse 0.6s infinite alternate 0.2s; }
-        .dot:nth-child(3) { animation: pulse 0.6s infinite alternate 0.4s; }
-
-        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
-        @keyframes pulse { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
-
-        /* --- AUTH CONTAINERS (Giriş / Kayıt Olma Alanı) --- */
+        /* --- AUTH CONTAINERS (Giriş ve Kayıt Ekranları) --- */
         .auth-container {
             position: fixed;
             top: 0;
@@ -125,7 +45,7 @@
             width: 100%;
             height: 100%;
             background-color: var(--bg-dark-main);
-            display: none;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -219,63 +139,6 @@
             cursor: pointer;
         }
 
-        /* reCAPTCHA Kutusu */
-        .captcha-box {
-            background-color: #222428;
-            border: 1px solid #333;
-            border-radius: 4px;
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .captcha-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .captcha-checkbox {
-            width: 24px;
-            height: 24px;
-            border: 2px solid #555;
-            border-radius: 2px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: transparent;
-        }
-
-        .captcha-checkbox.checked {
-            background-color: #009688;
-            border-color: #009688;
-        }
-
-        .captcha-text {
-            font-size: 13px;
-            color: #fff;
-        }
-
-        .captcha-right {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .captcha-right i {
-            color: #1a73e8;
-            font-size: 18px;
-        }
-
-        .captcha-right span {
-            font-size: 8px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
         .auth-btn {
             width: 100%;
             background-color: var(--accent-color);
@@ -291,6 +154,7 @@
             justify-content: center;
             gap: 8px;
             transition: all 0.2s;
+            margin-top: 10px;
         }
 
         .auth-btn:hover {
@@ -314,7 +178,7 @@
             text-decoration: underline;
         }
 
-        /* --- MAIN APP LAYOUT --- */
+        /* --- MAIN APP LAYOUT (Sunucu Arayüzü) --- */
         #app-container {
             display: none;
             flex: 1;
@@ -337,7 +201,6 @@
             height: 100%;
         }
 
-        /* Sol Sunucu Listesi */
         .servers-sidebar {
             width: 72px;
             background-color: var(--bg-dark-main);
@@ -368,7 +231,6 @@
             color: #111214;
         }
 
-        /* Kanal Listesi Barı */
         .channels-sidebar {
             width: 240px;
             background-color: var(--bg-dark-secondary);
@@ -421,7 +283,6 @@
             font-weight: 600;
         }
 
-        /* Alt Profil Bölümü */
         .user-profile-footer {
             height: 52px;
             background-color: rgba(0,0,0,0.15);
@@ -496,7 +357,6 @@
 
         .profile-actions i:hover { color: white; }
 
-        /* Chat Alanı */
         .chat-area {
             flex: 1;
             background-color: var(--bg-chat);
@@ -560,7 +420,6 @@
             font-size: 15px;
         }
 
-        /* Ayarlar Menüsü */
         .settings-page {
             background-color: var(--bg-dark-secondary);
             flex-direction: column;
@@ -623,7 +482,6 @@
             cursor: pointer;
         }
 
-        /* Alt Navigasyon */
         .bottom-navigation {
             display: none;
             height: 60px;
@@ -660,20 +518,6 @@
 </head>
 <body>
 
-    <div id="splash-screen">
-        <div class="splash-logo">🌙</div>
-        <div class="splash-title">LunaHub</div>
-        <div class="loading-bar-container">
-            <div class="loading-bar"></div>
-        </div>
-        <div class="loading-status">Hazır!</div>
-        <div class="loading-dots">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-    </div>
-
     <div id="login-screen" class="auth-container">
         <div class="brand-header">
             <i data-lucide="sparkles"></i> LunaHub
@@ -693,18 +537,7 @@
                 <label>Şifre</label>
                 <div class="input-wrapper">
                     <input type="password" id="login-password" placeholder="••••••••">
-                    <i data-lucide="eye" class="password-toggle" id="toggle-login-pass" onclick="togglePassVisibility('login-password')"></i>
-                </div>
-            </div>
-
-            <div class="captcha-box">
-                <div class="captcha-left">
-                    <div class="captcha-checkbox" id="captcha-check" onclick="handleCaptchaClick()"></div>
-                    <div class="captcha-text">Ben robot değilim</div>
-                </div>
-                <div class="captcha-right">
-                    <i data-lucide="refresh-cw"></i>
-                    <span>reCAPTCHA</span>
+                    <i data-lucide="eye" class="password-toggle" onclick="togglePassVisibility('login-password')"></i>
                 </div>
             </div>
 
@@ -715,16 +548,104 @@
             <div class="auth-footer-links">
                 <span style="color: var(--text-muted)">Hesabın yok mu?</span> 
                 <span class="auth-link" onclick="toggleAuthScreens('register')">Hesap oluştur</span>
-                <br><br>
-                <span class="auth-link" style="color: var(--text-muted); font-size: 12px;">Şifremi Unuttum</span>
             </div>
         </div>
     </div>
 
-    <div id="register-screen" class="auth-container">
+    <div id="register-screen" class="auth-container" style="display: none;">
         <div class="brand-header"><i data-lucide="sparkles"></i> LunaHub</div>
         <div class="brand-subtitle">Aramıza katıl!</div>
         <div class="auth-card">
             <h2>Hesap oluştur</h2>
             <div class="card-desc">Yeni bir LunaHub hesabı açın</div>
-      
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" id="reg-username" placeholder="Bir kullanıcı adı seçin..." autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>Şifre</label>
+                <div class="input-wrapper">
+                    <input type="password" id="reg-password" placeholder="••••••••">
+                    <i data-lucide="eye" class="password-toggle" onclick="togglePassVisibility('reg-password')"></i>
+                </div>
+            </div>
+            <button class="auth-btn" onclick="handleRegister()">Kayıt Ol</button>
+            <div class="auth-footer-links">
+                <span style="color: var(--text-muted)">Zaten hesabın var mı?</span> 
+                <span class="auth-link" onclick="toggleAuthScreens('login')">Giriş yap</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <div id="page-servers" class="page active servers-layout">
+            <div class="servers-sidebar">
+                <div class="server-icon active" onclick="changeServer('LunaHub', this)">🌙</div>
+                <div class="server-icon" style="background-color: var(--bg-dark-tertiary); color: var(--accent-color);" onclick="changeServer('31', this)">31</div>
+                <div class="server-icon" style="color: #23a55a;"><i data-lucide="plus"></i></div>
+            </div>
+
+            <div class="channels-sidebar" id="main-channels-sidebar">
+                <div>
+                    <div class="server-title-bar">
+                        <span id="current-server-title">LunaHub</span>
+                        <i data-lucide="chevron-down" style="width: 18px;"></i>
+                    </div>
+                    <div class="channels-content">
+                        <div class="category-title">Metin Kanalları</div>
+                        <div class="channel-item active" onclick="changeChannel('genel')">
+                            <i data-lucide="hash" style="width: 18px;"></i> genel
+                        </div>
+                        <div class="channel-item" onclick="changeChannel('oyun-sohbet')">
+                            <i data-lucide="hash" style="width: 18px;"></i> oyun-sohbet
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-profile-footer">
+                    <div class="profile-info">
+                        <div class="profile-avatar-wrapper">
+                            <div class="profile-avatar" id="footer-avatar-char">R</div>
+                            <div class="profile-status"></div>
+                        </div>
+                        <div class="profile-texts">
+                            <span class="profile-name" id="footer-username">riche</span>
+                            <span class="profile-tag-sub" id="footer-user-role">Kurucu</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <i data-lucide="mic"></i>
+                        <i data-lucide="headphones"></i>
+                        <i data-lucide="settings" onclick="switchTab('settings')"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <div class="chat-header">
+                    <i data-lucide="hash" style="color: var(--text-muted); width: 20px;"></i>
+                    <span id="current-channel-title">genel</span>
+                </div>
+                <div class="chat-messages" id="chat-messages-container">
+                    <div class="message-row">
+                        <div class="profile-avatar" style="background-color: #3498db; color: white; width: 40px; height: 40px; border-radius: 50%;">A</div>
+                        <div style="display: flex; flex-direction: column; margin-left: 12px;">
+                            <div>
+                                <span class="msg-username">Sistem</span>
+                                <span class="msg-time">Şimdi</span>
+                            </div>
+                            <div class="msg-text">LunaHub sunucusuna doğrudan giriş sağlandı. Hoş geldiniz! 🔥</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <i data-lucide="plus-circle" style="color: var(--text-muted);"></i>
+                        <input type="text" id="chat-input" placeholder="Mesaj gönder..." onkeypress="checkSend(event)">
+                        <i data-lucide="smile" style="color: var(--text-muted);"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-members" class="page" style="background-color: var(--bg-da
