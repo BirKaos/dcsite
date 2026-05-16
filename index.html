@@ -12,7 +12,7 @@
             --bg-dark-secondary: #1e1f22;
             --bg-dark-tertiary: #2b2d31;
             --bg-chat: #313338;
-            --accent-color: #00bfa5; /* Ekran görüntülerindeki o güzel turkuaz yeşil */
+            --accent-color: #00bfa5; /* Turkuaz yeşil */
             --accent-hover: #009688;
             --text-main: #dbdee1;
             --text-muted: #949ba4;
@@ -90,7 +90,7 @@
             height: 100%;
             background-color: var(--accent-color);
             border-radius: 2px;
-            animation: load 2s forwards ease-in-out;
+            animation: load 1.5s forwards ease-in-out;
         }
 
         .loading-status {
@@ -101,18 +101,118 @@
 
         @keyframes load {
             0% { width: 0%; }
-            50% { width: 70%; }
             100% { width: 100%; }
+        }
+
+        /* --- GİRİŞ / KAYIT EKRANLARI --- */
+        .auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark-main);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 999;
+        }
+
+        .auth-card {
+            background-color: var(--bg-dark-secondary);
+            padding: 32px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .auth-card h2 {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .auth-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-main);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            background-color: var(--bg-dark-main);
+            border: 1px solid rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 4px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .auth-btn {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .auth-toggle-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .auth-toggle-text span {
+            color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .auth-toggle-text span:hover {
+            text-decoration: underline;
         }
 
         /* --- MAIN APP STRUCTURE --- */
         #app-container {
+            display: none;
             flex: 1;
-            display: flex;
-            height: calc(100vh - 60px); /* Alt bar için yer bırakıyoruz */
+            height: calc(100vh - 60px);
         }
 
-        /* --- SAYFALAR (Görünüm Kontrolü) --- */
         .page {
             display: none;
             flex: 1;
@@ -130,7 +230,6 @@
             height: 100%;
         }
 
-        /* Sol Sunucu İkon Barı */
         .servers-sidebar {
             width: 72px;
             background-color: var(--bg-dark-main);
@@ -165,7 +264,6 @@
             background: var(--premium-gradient);
         }
 
-        /* Kanallar Yan Menüsü */
         .channels-sidebar {
             width: 240px;
             background-color: var(--bg-dark-secondary);
@@ -213,7 +311,6 @@
             color: white;
         }
 
-        /* Sağ Sohbet Alanı */
         .chat-area {
             flex: 1;
             background-color: var(--bg-chat);
@@ -313,7 +410,7 @@
             font-size: 15px;
         }
 
-        /* --- AYARLAR SAYFASI (Görsel 1 Birebir) --- */
+        /* --- AYARLAR SAYFASI --- */
         .settings-page {
             background-color: var(--bg-dark-secondary);
             flex-direction: column;
@@ -366,7 +463,6 @@
             flex: 1;
         }
 
-        /* --- LUNAHUB PREMIUM (NITRO) ÖZELLEŞTİRMESİ --- */
         .premium-box {
             margin: 16px;
             background: var(--premium-gradient);
@@ -399,11 +495,6 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 13px;
-            transition: transform 0.2s;
-        }
-
-        .premium-btn:hover {
-            transform: scale(1.03);
         }
 
         /* --- ÜYELER SAYFASI --- */
@@ -436,12 +527,12 @@
             right: 0;
         }
 
-        /* --- SABİT ALT GEZİNTİ BARBARI (Görsel 2 Birebir) --- */
+        /* --- SABİT ALT GEZİNTİ BARBARI --- */
         .bottom-navigation {
+            display: none;
             height: 60px;
             background-color: var(--bg-dark-main);
             border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
             justify-content: space-around;
             align-items: center;
             position: fixed;
@@ -467,18 +558,8 @@
             color: var(--accent-color);
         }
 
-        /* Mobil ve Ekran Boyutu Optimizasyonları */
         @media(max-width: 768px) {
-            .channels-sidebar {
-                display: none; /* Mobil öncelikli tasarımda direkt sohbete odaklanma */
-            }
-            .channels-sidebar.mobile-show {
-                display: flex;
-                position: absolute;
-                left: 72px;
-                height: calc(100% - 60px);
-                z-index: 99;
-            }
+            .channels-sidebar { display: none; }
         }
     </style>
 </head>
@@ -493,8 +574,41 @@
         <div class="loading-status">Hazır!</div>
     </div>
 
-    <div id="app-container">
+    <div id="login-screen" class="auth-container">
+        <div class="auth-card">
+            <h2>Giriş Yap</h2>
+            <p>Seni yeniden görmek harika!</p>
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" id="login-username" placeholder="Kullanıcı adını yaz...">
+            </div>
+            <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" id="login-password" placeholder="Şifreni yaz...">
+            </div>
+            <button class="auth-btn" onclick="handleLogin()">Giriş Yap</button>
+            <div class="auth-toggle-text">Hesabın yok mu? <span onclick="toggleAuthScreens('register')">Hesap Oluştur</span></div>
+        </div>
+    </div>
 
+    <div id="register-screen" class="auth-container">
+        <div class="auth-card">
+            <h2>Hesap Oluştur</h2>
+            <p>LunaHub dünyasına ilk adımını at.</p>
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" id="reg-username" placeholder="Bir kullanıcı adı seç...">
+            </div>
+            <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" id="reg-password" placeholder="Güçlü bir şifre belirle...">
+            </div>
+            <button class="auth-btn" onclick="handleRegister()">Kayıt Ol</button>
+            <div class="auth-toggle-text">Zaten hesabın var mı? <span onclick="toggleAuthScreens('login')">Giriş Yap</span></div>
+        </div>
+    </div>
+
+    <div id="app-container">
         <div id="page-servers" class="page active servers-layout">
             <div class="servers-sidebar">
                 <div class="server-icon active" onclick="changeServer('LunaHub Merkez', this)">🌙</div>
@@ -502,7 +616,7 @@
                 <div class="server-icon premium-badge-style" onclick="changeServer('Premium VIP', this)">👑</div>
             </div>
 
-            <div class="channels-sidebar id="channels-bar"">
+            <div class="channels-sidebar">
                 <div class="server-header">
                     <span id="current-server-title">LunaHub Merkez</span>
                     <i data-lucide="chevron-down" style="width: 18px;"></i>
@@ -540,17 +654,6 @@
                             <div class="msg-text">Selamlar! LunaHub harika görünüyor, ellerine sağlık.</div>
                         </div>
                     </div>
-                    <div class="message-row">
-                        <div class="user-avatar" style="background: var(--premium-gradient)">V</div>
-                        <div class="msg-details">
-                            <div class="msg-user-info">
-                                <span class="msg-username">Vampir31</span>
-                                <span class="premium-tag">PREMIUM</span>
-                                <span class="msg-time">Bugün 15:22</span>
-                            </div>
-                            <div class="msg-text">Yeni Premium özellikleri ve sunucu ikonları çok iyi olmuş kanka.</div>
-                        </div>
-                    </div>
                 </div>
                 <div class="chat-input-container">
                     <div class="chat-input-wrapper">
@@ -564,67 +667,14 @@
 
         <div id="page-channels" class="page">
             <div class="channels-sidebar" style="width: 100%;">
-                <div class="server-header">
-                    <span>Kanallar Listesi</span>
-                </div>
+                <div class="server-header"><span>Kanallar Listesi</span></div>
                 <div class="channels-list" style="padding: 16px;">
                     <div class="category-title">Metin Kanalları</div>
                     <div class="channel-item active"><i data-lucide="hash"></i> genel</div>
                     <div class="channel-item"><i data-lucide="hash"></i> oyun-sohbet</div>
-                    <div class="channel-item"><i data-lucide="hash"></i> lfg</div>
-                    <div class="channel-item"><i data-lucide="hash"></i> duyurular</div>
                 </div>
             </div>
         </div>
 
         <div id="page-members" class="page members-page">
-            <div class="category-title" style="margin-top: 0;">Çevrimiçi — 3 Kişi</div>
-            <div class="member-list-item">
-                <div class="avatar-status-wrapper">
-                    <div class="user-avatar" style="background-color: #e67e22;">R</div>
-                    <div class="status-dot"></div>
-                </div>
-                <div>
-                    <div style="font-weight: bold; color: white;">riche</div>
-                    <div style="font-size: 12px; color: var(--text-muted);">LunaHub Geliştiricisi</div>
-                </div>
-            </div>
-            <div class="member-list-item">
-                <div class="avatar-status-wrapper">
-                    <div class="user-avatar" style="background: var(--premium-gradient)">V</div>
-                    <div class="status-dot"></div>
-                </div>
-                <div>
-                    <div style="font-weight: bold; color: white;">Vampir31 <span class="premium-tag">PREMIUM</span></div>
-                    <div style="font-size: 12px; color: var(--text-muted);">PUBG King</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-settings" class="page settings-page">
-            <div class="settings-header">
-                <i data-lucide="arrow-left" onclick="switchTab('servers')" style="cursor: pointer;"></i>
-                <span>Kullanıcı Ayarları</span>
-            </div>
-
-            <div class="premium-box">
-                <h3><i data-lucide="crown"></i> LunaHub Premium</h3>
-                <p>Özel hareketli emojiler, 100MB dosya paylaşımı ve profilinde parıltılı Premium rozeti kazanın!</p>
-                <button class="premium-btn" onclick="upgradePremium()">Hemen Yükselt</button>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-item">
-                    <i data-lucide="user"></i>
-                    <div class="settings-item-text">Hesabım</div>
-                    <i data-lucide="chevron-right"></i>
-                </div>
-                <div class="settings-item">
-                    <i data-lucide="shield"></i>
-                    <div class="settings-item-text">Gizlilik ve Güvenlik</div>
-                    <i data-lucide="chevron-right"></i>
-                </div>
-                <div class="settings-item">
-                    <i data-lucide="smartphone"></i>
-                    <div class="settings-item-text">Bağlı Cihazlar</div>
-                    <i data
+            <div class="category-title" style="margin-top: 0;">Çevrimiçi Üyeler</
