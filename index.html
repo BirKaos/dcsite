@@ -17,6 +17,7 @@
             --text-muted: #949ba4;
             --input-bg: #2b2d31;
             --premium-gradient: linear-gradient(135deg, #8a2be2, #12f3ca);
+            --logo-gradient: linear-gradient(135deg, #6c5ce7, #00cec9);
         }
 
         * {
@@ -37,7 +38,7 @@
             overflow: hidden;
         }
 
-        /* --- AUTH CONTAINERS (Giriş ve Kayıt Ekranları) --- */
+        /* --- AUTH & LOADING SCREENS --- */
         .auth-container {
             position: fixed;
             top: 0;
@@ -51,40 +52,48 @@
             justify-content: center;
             padding: 24px;
             z-index: 999;
-            overflow-y: auto;
+        }
+
+        .luna-logo-box {
+            width: 84px;
+            height: 84px;
+            background: var(--logo-gradient);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            box-shadow: 0 8px 24px rgba(108, 92, 231, 0.3);
+            margin-bottom: 16px;
         }
 
         .brand-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
             font-size: 32px;
             font-weight: 700;
             color: white;
             margin-bottom: 4px;
-        }
-
-        .brand-header i {
-            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .brand-subtitle {
             color: var(--text-muted);
             font-size: 15px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .auth-card {
             background-color: var(--bg-dark-secondary);
             padding: 28px;
-            border-radius: 12px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 380px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            max-width: 390px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.5);
         }
 
         .auth-card h2 {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
             color: white;
             margin-bottom: 6px;
@@ -93,11 +102,11 @@
         .auth-card .card-desc {
             font-size: 14px;
             color: var(--text-muted);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
@@ -119,9 +128,9 @@
 
         .form-group input {
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 12px 14px;
+            background-color: #1e1f22;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 14px;
             border-radius: 8px;
             color: white;
             font-size: 15px;
@@ -136,6 +145,22 @@
             position: absolute;
             right: 14px;
             color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .auth-extra {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+        }
+
+        .auth-extra label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             cursor: pointer;
         }
 
@@ -154,7 +179,6 @@
             justify-content: center;
             gap: 8px;
             transition: all 0.2s;
-            margin-top: 10px;
         }
 
         .auth-btn:hover {
@@ -163,7 +187,7 @@
 
         .auth-footer-links {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 24px;
             font-size: 13px;
         }
 
@@ -174,11 +198,7 @@
             font-weight: 600;
         }
 
-        .auth-link:hover {
-            text-decoration: underline;
-        }
-
-        /* --- MAIN APP LAYOUT (Sunucu Arayüzü) --- */
+        /* --- APPLICATION LAYOUT --- */
         #app-container {
             display: none;
             flex: 1;
@@ -237,6 +257,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            border-right: 1px solid rgba(0,0,0,0.2);
         }
 
         .server-title-bar {
@@ -261,7 +282,7 @@
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            margin: 12px 0 6px 6px;
+            margin: 16px 0 6px 6px;
             letter-spacing: 0.5px;
         }
 
@@ -394,6 +415,7 @@
             padding: 1px 5px;
             border-radius: 4px;
             font-weight: 700;
+            margin-left: 4px;
         }
 
         .msg-time { font-size: 11px; color: var(--text-muted); margin-left: 6px; }
@@ -420,8 +442,9 @@
             font-size: 15px;
         }
 
+        /* --- SENSITIVE DATA ALIGNED MOBILE SETTINGS LAYOUT --- */
         .settings-page {
-            background-color: var(--bg-dark-secondary);
+            background-color: var(--bg-dark-main);
             flex-direction: column;
             width: 100%;
             overflow-y: auto;
@@ -435,6 +458,7 @@
             gap: 16px;
             font-weight: 700;
             font-size: 18px;
+            background-color: var(--bg-dark-secondary);
             border-bottom: 1px solid rgba(0,0,0,0.2);
         }
 
@@ -447,6 +471,12 @@
             letter-spacing: 0.5px;
         }
 
+        .settings-group {
+            background-color: var(--bg-dark-secondary);
+            display: flex;
+            flex-direction: column;
+        }
+
         .settings-item {
             display: flex;
             align-items: center;
@@ -454,33 +484,16 @@
             gap: 16px;
             cursor: pointer;
             color: #dbdee1;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
         }
 
         .settings-item i { color: var(--text-muted); width: 20px; height: 20px; }
 
         .settings-item-text { font-size: 15px; flex: 1; }
-
-        .premium-box {
-            margin: 16px;
-            background: var(--premium-gradient);
-            border-radius: 12px;
-            padding: 16px;
-            color: white;
-        }
-
-        .premium-box h3 { font-size: 18px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-
-        .premium-box p { font-size: 13px; opacity: 0.9; margin-bottom: 12px; }
-
-        .premium-btn {
-            background-color: white;
-            color: #8a2be2;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            cursor: pointer;
-        }
 
         .bottom-navigation {
             display: none;
@@ -519,9 +532,8 @@
 <body>
 
     <div id="login-screen" class="auth-container">
-        <div class="brand-header">
-            <i data-lucide="sparkles"></i> LunaHub
-        </div>
+        <div class="luna-logo-box">🌙</div>
+        <div class="brand-header">LunaHub</div>
         <div class="brand-subtitle">Tekrar hoş geldin!</div>
 
         <div class="auth-card">
@@ -529,8 +541,8 @@
             <div class="card-desc">Hesabına giriş yap ve sohbete katıl</div>
             
             <div class="form-group">
-                <label>Kullanıcı Adı</label>
-                <input type="text" id="login-username" placeholder="Kullanıcı adınızı yazın..." autocomplete="off">
+                <label>Kullanıcı Adı veya E-Posta</label>
+                <input type="text" id="login-username" placeholder="Kullanıcı adınızı girin..." autocomplete="off">
             </div>
             
             <div class="form-group">
@@ -539,6 +551,11 @@
                     <input type="password" id="login-password" placeholder="••••••••">
                     <i data-lucide="eye" class="password-toggle" onclick="togglePassVisibility('login-password')"></i>
                 </div>
+            </div>
+
+            <div class="auth-extra">
+                <label><input type="checkbox" checked style="width: auto; margin-right: 2px;"> Beni hatırla</label>
+                <span class="auth-link" style="font-size: 13px;">Şifremi Unuttum</span>
             </div>
 
             <button class="auth-btn" onclick="handleLogin()">
@@ -553,8 +570,10 @@
     </div>
 
     <div id="register-screen" class="auth-container" style="display: none;">
-        <div class="brand-header"><i data-lucide="sparkles"></i> LunaHub</div>
+        <div class="luna-logo-box">🌙</div>
+        <div class="brand-header">LunaHub</div>
         <div class="brand-subtitle">Aramıza katıl!</div>
+
         <div class="auth-card">
             <h2>Hesap oluştur</h2>
             <div class="card-desc">Yeni bir LunaHub hesabı açın</div>
@@ -588,7 +607,7 @@
             <div class="channels-sidebar" id="main-channels-sidebar">
                 <div>
                     <div class="server-title-bar">
-                        <span id="current-server-title">LunaHub</span>
+                        <span id="current-server-title">31</span>
                         <i data-lucide="chevron-down" style="width: 18px;"></i>
                     </div>
                     <div class="channels-content">
@@ -598,6 +617,12 @@
                         </div>
                         <div class="channel-item" onclick="changeChannel('oyun-sohbet')">
                             <i data-lucide="hash" style="width: 18px;"></i> oyun-sohbet
+                        </div>
+                        <div class="channel-item" onclick="changeChannel('lfg')">
+                            <i data-lucide="hash" style="width: 18px;"></i> lfg
+                        </div>
+                        <div class="channel-item" onclick="changeChannel('duyurular')">
+                            <i data-lucide="hash" style="width: 18px;"></i> duyurular
                         </div>
                     </div>
                 </div>
@@ -628,24 +653,4 @@
                 </div>
                 <div class="chat-messages" id="chat-messages-container">
                     <div class="message-row">
-                        <div class="profile-avatar" style="background-color: #3498db; color: white; width: 40px; height: 40px; border-radius: 50%;">A</div>
-                        <div style="display: flex; flex-direction: column; margin-left: 12px;">
-                            <div>
-                                <span class="msg-username">Sistem</span>
-                                <span class="msg-time">Şimdi</span>
-                            </div>
-                            <div class="msg-text">LunaHub sunucusuna doğrudan giriş sağlandı. Hoş geldiniz! 🔥</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-input-container">
-                    <div class="chat-input-wrapper">
-                        <i data-lucide="plus-circle" style="color: var(--text-muted);"></i>
-                        <input type="text" id="chat-input" placeholder="Mesaj gönder..." onkeypress="checkSend(event)">
-                        <i data-lucide="smile" style="color: var(--text-muted);"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-members" class="page" style="background-color: var(--bg-da
+                        <div class="profile-avatar" style="background: var(--premium-gradient); color: white; width
