@@ -6,18 +6,18 @@
     <title>LunaHub</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Discord / AuroraChat Renk Paleti ve Temalar */
+        /* Tam Uyumlu Renk Paleti */
         :root {
             --bg-dark-main: #111214;
             --bg-dark-secondary: #1e1f22;
             --bg-dark-tertiary: #2b2d31;
             --bg-chat: #313338;
-            --accent-color: #00bfa5; /* Turkuaz yeşil */
-            --accent-hover: #009688;
+            --accent-color: #12f3ca; /* Ekran görüntüsündeki canlı turkuaz */
+            --accent-hover: #0ed6b2;
             --text-main: #dbdee1;
             --text-muted: #949ba4;
-            --input-bg: #383a40;
-            --premium-gradient: linear-gradient(135deg, #8a2be2, #00bfa5);
+            --input-bg: #2b2d31;
+            --premium-gradient: linear-gradient(135deg, #8a2be2, #12f3ca);
         }
 
         * {
@@ -38,7 +38,7 @@
             overflow: hidden;
         }
 
-        /* --- 1. AÇILIŞ/YÜKLENME EKRANI (Splash Screen) --- */
+        /* --- SPLASH SCREEN (Görsel 479) --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -55,41 +55,39 @@
         }
 
         .splash-logo {
-            width: 80px;
-            height: 80px;
+            width: 85px;
+            height: 85px;
             background: var(--premium-gradient);
             border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            font-weight: bold;
+            font-size: 38px;
             color: white;
-            box-shadow: 0 8px 24px rgba(0, 191, 165, 0.2);
-            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(18, 243, 202, 0.25);
+            margin-bottom: 24px;
         }
 
         .splash-title {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 30px;
         }
 
         .loading-bar-container {
-            width: 200px;
+            width: 220px;
             height: 4px;
-            background-color: var(--input-bg);
+            background-color: var(--bg-dark-main);
             border-radius: 2px;
             overflow: hidden;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .loading-bar {
             width: 0%;
             height: 100%;
             background-color: var(--accent-color);
-            border-radius: 2px;
             animation: load 1.5s forwards ease-in-out;
         }
 
@@ -99,12 +97,27 @@
             font-weight: 500;
         }
 
-        @keyframes load {
-            0% { width: 0%; }
-            100% { width: 100%; }
+        .loading-dots {
+            display: flex;
+            gap: 6px;
+            margin-top: 24px;
         }
 
-        /* --- GİRİŞ / KAYIT EKRANLARI --- */
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+        .dot:nth-child(1) { animation: pulse 0.6s infinite alternate; }
+        .dot:nth-child(2) { animation: pulse 0.6s infinite alternate 0.2s; }
+        .dot:nth-child(3) { animation: pulse 0.6s infinite alternate 0.4s; }
+
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes pulse { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+
+        /* --- AUTH CONTAINERS (Görsel 483 Birebir Stil) --- */
         .auth-container {
             position: fixed;
             top: 0;
@@ -116,53 +129,79 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 24px;
             z-index: 999;
+            overflow-y: auto;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .brand-header i {
+            color: var(--accent-color);
+        }
+
+        .brand-subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 24px;
         }
 
         .auth-card {
             background-color: var(--bg-dark-secondary);
-            padding: 32px;
-            border-radius: 8px;
+            padding: 28px;
+            border-radius: 12px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 380px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
 
         .auth-card h2 {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 22px;
+            font-weight: 700;
             color: white;
-            text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
-        .auth-card p {
-            color: var(--text-muted);
+        .auth-card .card-desc {
             font-size: 14px;
-            text-align: center;
-            margin-bottom: 24px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--text-main);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
             text-transform: uppercase;
             margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
 
         .form-group input {
             width: 100%;
-            background-color: var(--bg-dark-main);
-            border: 1px solid rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 12px 14px;
+            border-radius: 8px;
             color: white;
             font-size: 15px;
             outline: none;
@@ -172,41 +211,108 @@
             border-color: var(--accent-color);
         }
 
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        /* reCAPTCHA Kutusu */
+        .captcha-box {
+            background-color: #222428;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .captcha-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .captcha-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #555;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .captcha-checkbox.checked {
+            background-color: #009688;
+            border-color: #009688;
+            color: white;
+        }
+
+        .captcha-text {
+            font-size: 13px;
+            color: #fff;
+        }
+
+        .captcha-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .captcha-right i {
+            color: #1a73e8;
+            font-size: 18px;
+        }
+
+        .captcha-right span {
+            font-size: 8px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
         .auth-btn {
             width: 100%;
             background-color: var(--accent-color);
-            color: white;
+            color: #111214;
             border: none;
             padding: 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
         }
 
         .auth-btn:hover {
             background-color: var(--accent-hover);
         }
 
-        .auth-toggle-text {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-top: 16px;
+        .auth-footer-links {
             text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
         }
 
-        .auth-toggle-text span {
+        .auth-link {
             color: var(--accent-color);
+            text-decoration: none;
             cursor: pointer;
         }
 
-        .auth-toggle-text span:hover {
+        .auth-link:hover {
             text-decoration: underline;
         }
 
-        /* --- MAIN APP STRUCTURE --- */
+        /* --- ANA UYGULAMA DUZENI (Görsel 481) --- */
         #app-container {
             display: none;
             flex: 1;
@@ -223,13 +329,13 @@
             display: flex;
         }
 
-        /* --- SUNUCULAR SAYFASI --- */
         .servers-layout {
             display: flex;
             width: 100%;
             height: 100%;
         }
 
+        /* Sol Bar */
         .servers-sidebar {
             width: 72px;
             background-color: var(--bg-dark-main);
@@ -251,66 +357,144 @@
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: bold;
-            position: relative;
+            font-size: 18px;
         }
 
-        .server-icon.active, .server-icon:hover {
-            border-radius: 16px;
+        .server-icon.active {
+            border-radius: 14px;
             background-color: var(--accent-color);
-            color: white;
+            color: #111214;
         }
 
-        .server-icon.premium-badge-style {
-            background: var(--premium-gradient);
-        }
-
+        /* Kanallar Side barı */
         .channels-sidebar {
             width: 240px;
             background-color: var(--bg-dark-secondary);
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
         }
 
-        .server-header {
+        .server-title-bar {
             height: 48px;
             padding: 0 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-weight: bold;
+            font-weight: 700;
             border-bottom: 1px solid rgba(0,0,0,0.2);
+            font-size: 15px;
         }
 
-        .channels-list {
+        .channels-content {
             flex: 1;
-            padding: 12px 8px;
+            padding: 14px 8px;
             overflow-y: auto;
         }
 
         .category-title {
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 11px;
+            font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            margin: 16px 0 6px 4px;
+            margin: 12px 0 6px 6px;
+            letter-spacing: 0.5px;
         }
 
         .channel-item {
             display: flex;
             align-items: center;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 10px 12px;
+            border-radius: 6px;
             color: var(--text-muted);
             cursor: pointer;
-            margin-bottom: 2px;
-            gap: 8px;
+            margin-bottom: 4px;
+            gap: 10px;
+            font-size: 15px;
         }
 
         .channel-item.active {
             background-color: rgba(255,255,255,0.06);
             color: white;
+            font-weight: 600;
         }
 
+        /* Alt Profil Bölümü (Görsel 481 Birebir) */
+        .user-profile-footer {
+            height: 52px;
+            background-color: rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: #111214;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .profile-status {
+            width: 10px;
+            height: 10px;
+            background-color: #23a55a;
+            border: 2px solid var(--bg-dark-secondary);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+        }
+
+        .profile-texts {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            line-height: 14px;
+        }
+
+        .profile-tag-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+            color: var(--text-muted);
+        }
+
+        .profile-actions i {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .profile-actions i:hover { color: white; }
+
+        /* Sohbet Alanı */
         .chat-area {
             flex: 1;
             background-color: var(--bg-chat);
@@ -324,7 +508,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-weight: bold;
+            font-weight: 700;
             border-bottom: 1px solid rgba(0,0,0,0.2);
         }
 
@@ -337,60 +521,24 @@
             gap: 16px;
         }
 
-        .message-row {
-            display: flex;
-            gap: 12px;
-        }
+        .message-row { display: flex; gap: 12px; }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--accent-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-        }
-
-        .msg-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .msg-user-info {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-        }
-
-        .msg-username {
-            font-weight: 600;
-            color: white;
-        }
+        .msg-username { font-weight: 600; color: white; }
 
         .premium-tag {
             background: var(--premium-gradient);
+            color: white;
             font-size: 10px;
-            padding: 1px 4px;
+            padding: 1px 5px;
             border-radius: 4px;
-            font-weight: bold;
+            font-weight: 700;
         }
 
-        .msg-time {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
+        .msg-time { font-size: 11px; color: var(--text-muted); margin-left: 6px; }
 
-        .msg-text {
-            margin-top: 4px;
-            color: #dbdee1;
-        }
+        .msg-text { margin-top: 4px; color: #dbdee1; }
 
-        .chat-input-container {
-            padding: 0 16px 16px 16px;
-        }
+        .chat-input-container { padding: 0 16px 16px 16px; }
 
         .chat-input-wrapper {
             background-color: var(--input-bg);
@@ -410,7 +558,7 @@
             font-size: 15px;
         }
 
-        /* --- AYARLAR SAYFASI --- */
+        /* --- AYARLAR SAYFASI (Görsel 480) --- */
         .settings-page {
             background-color: var(--bg-dark-secondary);
             flex-direction: column;
@@ -424,7 +572,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 18px;
             border-bottom: 1px solid rgba(0,0,0,0.2);
         }
@@ -434,7 +582,7 @@
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            padding: 16px 16px 8px 16px;
+            padding: 18px 16px 6px 16px;
             letter-spacing: 0.5px;
         }
 
@@ -445,23 +593,11 @@
             gap: 16px;
             cursor: pointer;
             color: #dbdee1;
-            transition: background 0.2s;
         }
 
-        .settings-item:hover {
-            background-color: rgba(255,255,255,0.03);
-        }
+        .settings-item i { color: var(--text-muted); width: 20px; height: 20px; }
 
-        .settings-item i {
-            color: var(--text-muted);
-            width: 22px;
-            height: 22px;
-        }
-
-        .settings-item-text {
-            font-size: 15px;
-            flex: 1;
-        }
+        .settings-item-text { font-size: 15px; flex: 1; }
 
         .premium-box {
             margin: 16px;
@@ -469,22 +605,11 @@
             border-radius: 12px;
             padding: 16px;
             color: white;
-            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
         }
 
-        .premium-box h3 {
-            font-size: 18px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .premium-box h3 { font-size: 18px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
 
-        .premium-box p {
-            font-size: 13px;
-            opacity: 0.9;
-            margin-bottom: 12px;
-        }
+        .premium-box p { font-size: 13px; opacity: 0.9; margin-bottom: 12px; }
 
         .premium-btn {
             background-color: white;
@@ -492,39 +617,8 @@
             border: none;
             padding: 8px 16px;
             border-radius: 20px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            font-size: 13px;
-        }
-
-        /* --- ÜYELER SAYFASI --- */
-        .members-page {
-            background-color: var(--bg-dark-secondary);
-            flex-direction: column;
-            width: 100%;
-            padding: 16px;
-        }
-
-        .member-list-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 0;
-        }
-
-        .avatar-status-wrapper {
-            position: relative;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            background-color: #23a55a;
-            border: 2px solid var(--bg-dark-secondary);
-            border-radius: 50%;
-            position: absolute;
-            bottom: 0;
-            right: 0;
         }
 
         /* --- SABİT ALT GEZİNTİ BARBARI --- */
@@ -554,12 +648,11 @@
             padding: 8px 0;
         }
 
-        .nav-item.active {
-            color: var(--accent-color);
-        }
+        .nav-item.active { color: var(--accent-color); }
 
         @media(max-width: 768px) {
             .channels-sidebar { display: none; }
+            .channels-sidebar.active-nav { display: flex; width: 100%; }
         }
     </style>
 </head>
@@ -572,109 +665,63 @@
             <div class="loading-bar"></div>
         </div>
         <div class="loading-status">Hazır!</div>
+        <div class="loading-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
     </div>
 
     <div id="login-screen" class="auth-container">
+        <div class="brand-header">
+            <i data-lucide="sparkles"></i> LunaHub
+        </div>
+        <div class="brand-subtitle">Tekrar hoş geldin!</div>
+
         <div class="auth-card">
-            <h2>Giriş Yap</h2>
-            <p>Seni yeniden görmek harika!</p>
+            <h2>Giriş yap</h2>
+            <div class="card-desc">Hesabına giriş yap ve sohbete katıl</div>
+            
             <div class="form-group">
                 <label>Kullanıcı Adı</label>
-                <input type="text" id="login-username" placeholder="Kullanıcı adını yaz...">
+                <input type="text" id="login-username" placeholder="Kullanıcı adınızı yazın...">
             </div>
+            
             <div class="form-group">
                 <label>Şifre</label>
-                <input type="password" id="login-password" placeholder="Şifreni yaz...">
+                <div class="input-wrapper">
+                    <input type="password" id="login-password" placeholder="••••••••">
+                    <i data-lucide="eye" class="password-toggle" id="toggle-login-pass" onclick="togglePassVisibility('login-password', 'toggle-login-pass')"></i>
+                </div>
             </div>
-            <button class="auth-btn" onclick="handleLogin()">Giriş Yap</button>
-            <div class="auth-toggle-text">Hesabın yok mu? <span onclick="toggleAuthScreens('register')">Hesap Oluştur</span></div>
+
+            <div class="captcha-box">
+                <div class="captcha-left">
+                    <div class="captcha-checkbox" id="captcha-check" onclick="handleCaptchaClick()"></div>
+                    <div class="captcha-text">Ben robot değilim</div>
+                </div>
+                <div class="captcha-right">
+                    <i data-lucide="refresh-cw"></i>
+                    <span>reCAPTCHA</span>
+                </div>
+            </div>
+
+            <button class="auth-btn" onclick="handleLogin()">
+                <i data-lucide="log-in" style="width: 18px;"></i> Giriş Yap
+            </button>
+            
+            <div class="auth-footer-links">
+                <span style="color: var(--text-muted)">Hesabın yok mu?</span> 
+                <span class="auth-link" onclick="toggleAuthScreens('register')">Hesap oluştur</span>
+                <br><br>
+                <span class="auth-link" style="color: var(--text-muted); font-size: 12px;">Şifremi Unuttum</span>
+            </div>
         </div>
     </div>
 
     <div id="register-screen" class="auth-container">
+        <div class="brand-header"><i data-lucide="sparkles"></i> LunaHub</div>
+        <div class="brand-subtitle">Aramıza katıl!</div>
         <div class="auth-card">
-            <h2>Hesap Oluştur</h2>
-            <p>LunaHub dünyasına ilk adımını at.</p>
-            <div class="form-group">
-                <label>Kullanıcı Adı</label>
-                <input type="text" id="reg-username" placeholder="Bir kullanıcı adı seç...">
-            </div>
-            <div class="form-group">
-                <label>Şifre</label>
-                <input type="password" id="reg-password" placeholder="Güçlü bir şifre belirle...">
-            </div>
-            <button class="auth-btn" onclick="handleRegister()">Kayıt Ol</button>
-            <div class="auth-toggle-text">Zaten hesabın var mı? <span onclick="toggleAuthScreens('login')">Giriş Yap</span></div>
-        </div>
-    </div>
-
-    <div id="app-container">
-        <div id="page-servers" class="page active servers-layout">
-            <div class="servers-sidebar">
-                <div class="server-icon active" onclick="changeServer('LunaHub Merkez', this)">🌙</div>
-                <div class="server-icon" onclick="changeServer('PUBG Mobile Odası', this)">🎮</div>
-                <div class="server-icon premium-badge-style" onclick="changeServer('Premium VIP', this)">👑</div>
-            </div>
-
-            <div class="channels-sidebar">
-                <div class="server-header">
-                    <span id="current-server-title">LunaHub Merkez</span>
-                    <i data-lucide="chevron-down" style="width: 18px;"></i>
-                </div>
-                <div class="channels-list">
-                    <div class="category-title">Metin Kanalları</div>
-                    <div class="channel-item active" onclick="changeChannel('genel')">
-                        <i data-lucide="hash" style="width: 18px;"></i> genel
-                    </div>
-                    <div class="channel-item" onclick="changeChannel('oyun-sohbet')">
-                        <i data-lucide="hash" style="width: 18px;"></i> oyun-sohbet
-                    </div>
-                    <div class="channel-item" onclick="changeChannel('lfg-ekip-ara')">
-                        <i data-lucide="hash" style="width: 18px;"></i> lfg
-                    </div>
-                    <div class="channel-item" onclick="changeChannel('duyurular')">
-                        <i data-lucide="hash" style="width: 18px;"></i> duyurular
-                    </div>
-                </div>
-            </div>
-
-            <div class="chat-area">
-                <div class="chat-header">
-                    <i data-lucide="hash" style="color: var(--text-muted); width: 20px;"></i>
-                    <span id="current-channel-title">genel</span>
-                </div>
-                <div class="chat-messages" id="chat-messages-container">
-                    <div class="message-row">
-                        <div class="user-avatar" style="background-color: #3498db;">A</div>
-                        <div class="msg-details">
-                            <div class="msg-user-info">
-                                <span class="msg-username">Ahmet</span>
-                                <span class="msg-time">Bugün 15:20</span>
-                            </div>
-                            <div class="msg-text">Selamlar! LunaHub harika görünüyor, ellerine sağlık.</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-input-container">
-                    <div class="chat-input-wrapper">
-                        <i data-lucide="plus-circle" style="color: var(--text-muted);"></i>
-                        <input type="text" id="chat-input" placeholder="Mesaj gönder..." onkeypress="checkSend(event)">
-                        <i data-lucide="smile" style="color: var(--text-muted);" onclick="sendEmoji()"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-channels" class="page">
-            <div class="channels-sidebar" style="width: 100%;">
-                <div class="server-header"><span>Kanallar Listesi</span></div>
-                <div class="channels-list" style="padding: 16px;">
-                    <div class="category-title">Metin Kanalları</div>
-                    <div class="channel-item active"><i data-lucide="hash"></i> genel</div>
-                    <div class="channel-item"><i data-lucide="hash"></i> oyun-sohbet</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-members" class="page members-page">
-            <div class="category-title" style="margin-top: 0;">Çevrimiçi Üyeler</
+            <h2>Hesap oluştur</h2>
+            <div class="card-desc">Yeni bir LunaHub hesabı açın<
