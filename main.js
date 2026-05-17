@@ -1,6 +1,6 @@
 // --- SİSTEM AYARLARI VE KURUCU HESABI ---
 const FOUNDER_USER = "riche";
-const FOUNDER_PASS = "richeLuna2026"; // Kurucu Şifresi
+const FOUNDER_PASS = "richeporche@dc"; // Kurucu Şifresi
 
 // Başlangıç Veritabanı Kurulumu
 if (!localStorage.getItem('users')) {
