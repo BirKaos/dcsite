@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Web - Giriş / Kayıt</title>
+    <title>LunaHub - Discord & Telegram Hybrid</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #0e1621; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .auth-box { background-color: #17212b; padding: 40px; border-radius: 10px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .logo { margin-bottom: 20px; }
-        h2 { margin-bottom: 20px; color: #fff; }
+        body { background-color: #0e1621; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .auth-box { background-color: #17212b; padding: 40px; border-radius: 10px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 1px solid #2b5278; }
+        .logo { margin-bottom: 15px; font-size: 28px; font-weight: bold; color: #5288c1; }
+        h2 { margin-bottom: 20px; color: #fff; font-size: 22px; }
         input { width: 100%; padding: 12px; margin-bottom: 15px; background: #24303f; border: 1px solid #2f3e4e; border-radius: 6px; color: white; outline: none; }
         input:focus { border-color: #5288c1; }
-        button { width: 100%; padding: 12px; background: #5288c1; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: #5288c1; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
         button:hover { background: #4374a5; }
         p { margin-top: 15px; font-size: 14px; color: #7f91a4; }
         span { color: #5288c1; cursor: pointer; text-decoration: underline; }
+        .info-note { font-size: 11px; color: #5288c1; margin-top: 10px; background: rgba(82, 136, 193, 0.1); padding: 5px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-<div class="auth-box">
-    <div class="logo">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" width="80">
-    </div>
+<div class="auth-box" id="auth-container">
+    <div class="logo">🌙 LunaHub</div>
     <h2 id="title">Giriş Yap</h2>
     <form id="auth-form">
-        <input type="email" id="email" placeholder="Gmail Adresiniz" required>
+        <input type="text" id="username" placeholder="Kullanıcı Adı veya Gmail" required>
         <input type="password" id="password" placeholder="Şifreniz" required>
         <button type="submit" id="submit-btn">Giriş Yap</button>
     </form>
     <p id="toggle-p">Hesabın yok mu? <span id="toggle-auth">Kayıt Ol</span></p>
+    <div class="info-note">Kurucu Girişi: Kullanıcı adı "riche" yazarak erişebilirsiniz.</div>
 </div>
 
 <script src="main.js"></script>
