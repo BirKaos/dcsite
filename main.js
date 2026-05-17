@@ -1,314 +1,335 @@
-// --- SİSTEM AYARLARI VE KURUCU HESABI ---
+// --- TEMEL VERİLER VE KURUCU HESABI SİSTEMİ ---
 const FOUNDER_USER = "riche";
-const FOUNDER_PASS = "richeLuna2026"; // Kurucu Şifresi
+const FOUNDER_PASS = "richeLuna2026";
 
-// Başlangıç Veritabanı Kurulumu
+// Tarayıcı hafızasını ilklendirme
 if (!localStorage.getItem('users')) {
     localStorage.setItem('users', JSON.stringify([
-        { username: FOUNDER_USER, password: FOUNDER_PASS, role: "kurucu", hasNitro: true, avatar: "https://i.gifer.com/ZZ5H.gif", banner: "https://i.gifer.com/4V0b.gif" }
+        { username: FOUNDER_USER, password: FOUNDER_PASS, email: "arapsabunuhamlatan@gmail.com", role: "kurucu", hasNitro: true, avatar: "https://i.gifer.com/ZZ5H.gif", banner: "https://i.gifer.com/4V0b.gif", joinDate: "17 Mayıs 2026" }
     ]));
 }
 if (!localStorage.getItem('servers')) {
-    localStorage.setItem('servers', JSON.stringify([{ id: "srv-1", name: "LunaHub Resmi Topluluk", icon: "🌙", channels: ["genel-sohbet", "duyurular"], messages: [] }]));
+    localStorage.setItem('servers', JSON.stringify([{ id: "srv-1", name: "LunaHub Topluluk", channels: ["genel-sohbet", "duyurular"], messages: [] }]));
 }
 if (!localStorage.getItem('friends')) {
-    localStorage.setItem('friends', JSON.stringify(["riche"])); // Başlangıçta herkes kurucuya arkadaşlık atabilsin
+    localStorage.setItem('friends', JSON.stringify(["riche", "Ahmet", "LunaBot"]));
 }
 
-// Giriş / Kayıt Ekranı Yönetimi
-const title = document.getElementById('title');
-const submitBtn = document.getElementById('submit-btn');
-const toggleAuth = document.getElementById('toggle-auth');
-const toggleP = document.getElementById('toggle-p');
-let isLogin = true;
+// Giriş Ekranı ve Captcha Kontrolü
+let isLoginMode = true;
+let isCaptchaChecked = false;
 
-if (toggleAuth) {
-    document.addEventListener('click', function(e) {
-        if(e.target && e.target.id === 'toggle-auth') {
-            isLogin = !isLogin;
-            if (!isLogin) {
-                title.innerText = "Hesap Oluştur";
-                submitBtn.innerText = "Kayıt Ol";
-                toggleP.innerHTML = "Zaten hesabın var mı? <span id='toggle-auth'>Giriş Yap</span>";
-            } else {
-                title.innerText = "Giriş Yap";
-                submitBtn.innerText = "Giriş Yap";
-                toggleP.innerHTML = "Hesabın yok mu? <span id='toggle-auth'>Kayıt Ol</span>";
-            }
-        }
+const captchaBtn = document.getElementById('captcha-btn');
+if(captchaBtn) {
+    captchaBtn.addEventListener('click', () => {
+        isCaptchaChecked = !isCaptchaChecked;
+        captchaBtn.classList.toggle('checked', isCaptchaChecked);
     });
 }
 
-// Giriş ve Kayıt İşlemleri (KESİN GİRİŞ KESTİRMELİ GÜNCEL KISIM)
+const switchAuth = document.getElementById('switch-auth');
+if(switchAuth) {
+    switchAuth.addEventListener('click', () => {
+        isLoginMode = !isLoginMode;
+        document.getElementById('form-title').innerText = isLoginMode ? "Giriş yap" : "Hesap oluştur";
+        document.getElementById('submit-btn').innerText = isLoginMode ? "→ Giriş Yap" : "✓ Kayıt Ol";
+        document.getElementById('auth-subtitle').innerText = isLoginMode ? "Tekrar hoş geldin!" : "Sohbete katılmak için ilk adımı at.";
+        document.getElementById('toggle-container').innerHTML = isLoginMode ? 'Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>' : 'Zaten hesabın var mı? <span class="toggle-link" id="switch-auth">Giriş yap</span>';
+        location.reload(); // Dinamik tetikleyici basitleştirmesi
+    });
+}
+
 const authForm = document.getElementById('auth-form');
 if (authForm) {
     authForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        if(!isCaptchaChecked) { alert("Lütfen robot olmadığınızı doğrulayın!"); return; }
+        
         const userInput = document.getElementById('username').value.trim();
         const passwordInput = document.getElementById('password').value;
         let users = JSON.parse(localStorage.getItem('users')) || [];
 
-        // Hileli/Kestirme Yol: Eğer 'riche' yazıp şifreyi doğru girdiysen tarayıcı hafızasına bakmadan direkt içeri al!
+        // KESİN GİRİŞ KESTİRMESİ (Kurucu Hesap Koruması)
         if (userInput.toLowerCase() === "riche" && passwordInput === "richeLuna2026") {
-            let founderAccount = { 
-                username: "riche", 
-                role: "kurucu", 
-                hasNitro: true, 
-                avatar: "https://i.gifer.com/ZZ5H.gif", 
-                banner: "https://i.gifer.com/4V0b.gif" 
-            };
-            localStorage.setItem('currentUser', JSON.stringify(founderAccount));
-            alert("Hoş geldin Kurucu Riche! Sistem başlatılıyor...");
-            loadMainInterface();
+            let founder = users.find(u => u.username === "riche") || { username: "riche", email: "arapsabunuhamlatan@gmail.com", role: "kurucu", hasNitro: true, avatar: "https://i.gifer.com/ZZ5H.gif", banner: "https://i.gifer.com/4V0b.gif", joinDate: "17 Mayıs 2026" };
+            localStorage.setItem('currentUser', JSON.stringify(founder));
+            alert("Hoş geldin Kurucu Riche! Sistem yükleniyor...");
+            loadMainApp();
             return;
         }
 
-        if (!isLogin) {
-            // KAYIT OLMA MANTIĞI
-            if (userInput.toLowerCase() === "riche") {
-                alert("Bu kurucu adını kullanamazsınız!");
-                return;
-            }
-            const userExists = users.find(u => u.username === userInput);
-            if (userExists) { alert("Bu kullanıcı adı zaten alınmış!"); return; }
-
-            users.push({ username: userInput, password: passwordInput, role: "user", hasNitro: false, avatar: "https://status.discordapp.com/static/images/logged_out_avatar.png", banner: "#2f3e4e" });
-            localStorage.setItem('users', JSON.stringify(users));
-            alert("Kayıt Başarılı! Giriş yapabilirsiniz.");
-            location.reload();
-        } else {
-            // NORMAL KULLANICI GİRİŞİ
-            const user = users.find(u => u.username === userInput && u.password === passwordInput);
+        if (isLoginMode) {
+            // Giriş Algoritması
+            const user = users.find(u => (u.username === userInput || u.email === userInput) && u.password === passwordInput);
             if (user) {
                 localStorage.setItem('currentUser', JSON.stringify(user));
-                alert(`Giriş Başarılı! Hoş geldin, ${user.username}`);
-                loadMainInterface();
+                loadMainApp();
             } else {
-                alert("Hatalı Kullanıcı Adı veya Şifre!");
+                alert("Hatalı Kullanıcı Adı, E-Posta veya Şifre!");
             }
+        } else {
+            // Kayıt Algoritması
+            if(userInput.toLowerCase() === "riche") { alert("Bu kullanıcı adı rezerve edilmiştir."); return; }
+            users.push({ username: userInput, email: userInput.includes('@') ? userInput : userInput+"@luna.com", password: passwordInput, role: "user", hasNitro: false, avatar: "https://status.discordapp.com/static/images/logged_out_avatar.png", banner: "#252836", joinDate: "17 Mayıs 2026" });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert("Hesap başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.");
+            location.reload();
         }
     });
 }
 
-// --- ANA DISCORD / LUNAHUB SİSTEMİ ARAYÜZÜ ---
-function loadMainInterface() {
+// --- ANA SOHBET / DISCORD / AURORA ARABİRİMİ ---
+let activeTab = 'sohbet'; // Varsayılan Tab: Sohbet (3. resimdeki alan)
+let activeChannel = 'genel-sohbet';
+
+function loadMainApp() {
+    renderMainLayout();
+}
+
+function renderMainLayout() {
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    let nitroBadge = currentUser.hasNitro ? `<span style="background:#ff73fa; color:white; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:5px; font-weight:bold;">NİTRO</span>` : '';
-    let founderBadge = currentUser.role === "kurucu" ? `<span style="background:#f1c40f; color:black; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:5px; font-weight:bold;">KURUCU</span>` : '';
-
+    
+    // Alt gezinme barı ve üst içerik kapsayıcısı (Tıpkı AuroraChat mobil arayüzü gibi)
     document.body.innerHTML = `
-    <div style="display: flex; width: 100vw; height: 100vh; background: #2f3136;">
-        <div id="server-list" style="width: 70px; background: #202225; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 10px;">
-            <div onclick="switchTab('friends-tab')" style="width: 48px; height: 48px; background: #5865F2; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px;" title="Arkadaşlar">👥</div>
-            <div style="width: 32px; height: 2px; background: #36393f;"></div>
-            <div id="dynamic-servers" style="display:flex; flex-direction:column; gap:10px;"></div>
-            <div onclick="createNewServerPrompt()" style="width: 48px; height: 48px; background: #36393f; color: #43b581; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 24px; font-weight: bold;" title="Sunucu Ekle">+</div>
-        </div>
-
-        <div style="width: 240px; background: #2f3136; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #202225;">
-            <div style="padding: 15px; background: #2f3136; font-weight: bold; border-bottom: 1px solid #202225; box-shadow: 0 1px 2px rgba(0,0,0,0.2);" id="sidebar-header">LunaHub Ana Sayfa</div>
-            
-            <div id="sidebar-content" style="flex: 1; padding: 10px; overflow-y: auto;"></div>
-
-            <div style="padding: 10px; background: #292b2f; display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 8px; cursor:pointer;" onclick="openProfileSettings()">
-                    <img src="${currentUser.avatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-                    <div style="max-width: 110px; overflow: hidden;">
-                        <div style="font-size: 13px; font-weight: bold; white-space: nowrap;">${currentUser.username}</div>
-                        <div style="font-size: 11px; color: #b9bbbe;">#0001</div>
-                    </div>
-                </div>
-                <div style="display:flex; gap:3px;">${founderBadge}${nitroBadge}</div>
+    <div style="display: flex; flex-direction: column; width: 100vw; height: 100vh; background-color: #12141c;">
+        <div id="app-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 60px;"></div>
+        
+        <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background-color: #1c1e28; border-top: 1px solid #282a36; display: flex; justify-content: space-around; align-items: center; z-index: 9999;">
+            <div onclick="switchNavigation('anasayfa')" style="text-align:center; cursor:pointer; color: ${activeTab==='anasayfa' ? '#00e5bc':'#9aa0a6'};">
+                <div style="font-size:20px;">🏠</div><div style="font-size:10px;">Ana Sayfa</div>
+            </div>
+            <div onclick="switchNavigation('mesajlar')" style="text-align:center; cursor:pointer; color: ${activeTab==='mesajlar' ? '#00e5bc':'#9aa0a6'};">
+                <div style="font-size:20px;">💬</div><div style="font-size:10px;">Mesajlar</div>
+            </div>
+            <div onclick="switchNavigation('sohbet')" style="text-align:center; cursor:pointer; color: ${activeTab==='sohbet' ? '#00e5bc':'#9aa0a6'};">
+                <div style="font-size:20px;">🌐</div><div style="font-size:10px;">Sohbet</div>
+            </div>
+            <div onclick="switchNavigation('arkadaslar')" style="text-align:center; cursor:pointer; color: ${activeTab==='arkadaslar' ? '#00e5bc':'#9aa0a6'};">
+                <div style="font-size:20px;">👥</div><div style="font-size:10px;">Arkadaşlar</div>
+            </div>
+            <div onclick="switchNavigation('ayarlar')" style="text-align:center; cursor:pointer; color: ${activeTab==='ayarlar' ? '#00e5bc':'#9aa0a6'};">
+                <div style="font-size:20px;">⚙️</div><div style="font-size:10px;">Ayarlar</div>
             </div>
         </div>
-
-        <div id="main-content" style="flex: 1; background: #36393f; display: flex; flex-direction: column;"></div>
     </div>
     `;
     
-    // Varsayılan sekmeyi yükle
-    switchTab('friends-tab');
-    renderServers();
+    renderTabContent();
 }
 
-// --- SUNUCU KURMA VE DAVET SİSTEMİ ---
-function renderServers() {
-    const container = document.getElementById('dynamic-servers');
-    if(!container) return;
+function switchNavigation(tabName) {
+    activeTab = tabName;
+    renderMainLayout();
+}
+
+function renderTabContent() {
+    const body = document.getElementById('app-body');
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    let friends = JSON.parse(localStorage.getItem('friends')) || [];
     let servers = JSON.parse(localStorage.getItem('servers')) || [];
-    container.innerHTML = servers.map(srv => `
-        <div onclick="switchTab('server-${srv.id}')" style="width: 48px; height: 48px; background: #36393f; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; transition:0.2s;" title="${srv.name}">
-            ${srv.name.substring(0,2).toUpperCase()}
-        </div>
-    `).join('');
-}
 
-function createNewServerPrompt() {
-    let serverName = prompt("Yeni Discord Sunucunuzun Adını Girin:");
-    if (!serverName) return;
-    let servers = JSON.parse(localStorage.getItem('servers')) || [];
-    let newId = "srv-" + Date.now();
-    servers.push({ id: newId, name: serverName, icon: "📁", channels: ["genel-sohbet", "duyurular", "kod-paylasim"], messages: [] });
-    localStorage.setItem('servers', JSON.stringify(servers));
-    renderServers();
-    switchTab(`server-${newId}`);
-}
-
-// --- SEKME DEĞİŞTİRME MANTIĞI (ARKADAŞLAR / SUNUCULAR) ---
-let currentActiveTab = 'friends-tab';
-let currentActiveChannel = 'genel-sohbet';
-
-function switchTab(tabId) {
-    currentActiveTab = tabId;
-    const sidebarHeader = document.getElementById('sidebar-header');
-    const sidebarContent = document.getElementById('sidebar-content');
-    const mainContent = document.getElementById('main-content');
-
-    if (tabId === 'friends-tab') {
-        sidebarHeader.innerText = "📍 Ana Sayfa";
-        sidebarContent.innerHTML = `
-            <div style="color: #8e9297; font-size: 12px; font-weight: bold; padding: 5px 10px;">DİREKT MESAJLAR</div>
-            <div style="padding: 8px 10px; background: rgba(255,255,255,0.05); border-radius:4px; margin-top:5px; color:#fff;">🤖 Kurucu (riche)</div>
-        `;
+    if (activeTab === 'sohbet') {
+        // SUNUCULAR VE ODALAR (3. Ekran Görüntüsü Mantığı)
+        let server = servers[0]; // İlk sunucuyu gösterelim
+        let channelMessages = server.messages.filter(m => m.channel === activeChannel);
         
-        // Arkadaşlık ve Nitro Sayfası
-        let friends = JSON.parse(localStorage.getItem('friends')) || [];
-        let friendsListHTML = friends.map(f => `<div style="padding:15px; background:#2f3136; border-radius:8px; display:flex; justify-content:space-between; align-items:center;"><span>👤 ${f}</span><span style="color:#43b581; font-size:13px;">● Çevrimiçi</span></div>`).join('');
-
-        mainContent.innerHTML = `
-            <div style="padding: 20px; border-bottom: 1px solid #202225; display: flex; gap: 20px; align-items: center;">
-                <h3 style="font-size:16px;">👥 Arkadaşlar</h3>
-                <button onclick="addFriendPrompt()" style="width:auto; padding: 6px 16px; background:#43b581; font-size:14px;">Arkadaş Ekle</button>
-                <input type="text" id="nitro-code-input" placeholder="Nitro Kodu Gir (/lunahub2026)" style="margin:0; width:250px; padding:6px;">
-                <button onclick="claimNitro()" style="width:auto; padding: 6px 16px; background:#ff73fa; font-size:14px;">Kodu Kullan</button>
+        body.innerHTML = `
+            <div style="padding: 16px; background: #1c1e28; border-bottom: 1px solid #282a36; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:700; font-size:18px;">👑 ${server.name} (#${activeChannel})</span>
+                <button onclick="createNewChannelPrompt()" style="background:#252836; color:#00e5bc; border:1px solid #2f3345; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px;">+ Kanal Aç</button>
             </div>
-            <div style="padding: 20px; flex: 1; overflow-y: auto; display:flex; flex-direction:column; gap:10px;">
-                <h4 style="color:#b9bbbe; font-size:12px;">TÜM ARKADAŞLAR (${friends.length})</h4>
-                ${friendsListHTML}
+            
+            <div style="display:flex; gap:8px; padding:10px 16px; background:#12141c; overflow-x:auto; border-bottom:1px solid #1c1e28;">
+                ${server.channels.map(ch => `
+                    <span onclick="activeChannel='${ch}'; renderTabContent();" style="padding:6px 12px; border-radius:20px; font-size:13px; cursor:pointer; background:${activeChannel===ch ? '#00e5bc':'#1c1e28'}; color:${activeChannel===ch ? '#12141c':'#9aa0a6'}; font-weight:bold;">
+                        # ${ch}
+                    </span>
+                `).join('')}
+                <span onclick="alert('Davet Linkiniz: https://lunahubtr.netlify.app/davet/${server.id}')" style="padding:6px 12px; border-radius:20px; font-size:13px; cursor:pointer; background:#5865F2; color:white; font-weight:bold;">
+                    🔗 Sunucu Davet Linki Al
+                </span>
             </div>
-        `;
-    } else if (tabId.startsWith('server-')) {
-        let servers = JSON.parse(localStorage.getItem('servers')) || [];
-        let srvId = tabId.replace('server-', '');
-        let server = servers.find(s => s.id == srvId);
-        
-        if(!server) return;
 
-        sidebarHeader.innerText = `👑 ${server.name}`;
-        sidebarContent.innerHTML = `
-            <div style="margin-bottom:10px;"><button onclick="alert('Davet Linki: https://lunahub.netlify.app/join/${server.id}')" style="background:#5865F2; padding:5px; font-size:12px;">Sunucu Davet Linki Oluştur</button></div>
-            <div style="color: #8e9297; font-size: 12px; font-weight: bold; padding: 5px 10px;">METİN KANALLARI</div>
-            ${server.channels.map(ch => `<div onclick="currentActiveChannel='${ch}'; switchTab('${tabId}')" style="padding: 6px 10px; border-radius:4px; cursor:pointer; background: ${currentActiveChannel === ch ? 'rgba(255,255,255,0.1)' : 'transparent'}; margin-top:2px; color:#b9bbbe;"># ${ch}</div>`).join('')}
-        `;
-
-        // Sunucu Mesajlaşma Alanı
-        let currentMessages = server.messages || [];
-        let filteredMsgs = currentMessages.filter(m => m.channel === currentActiveChannel);
-        let msgsHTML = filteredMsgs.map(m => `
-            <div style="display:flex; gap:10px; align-items:flex-start;">
-                <img src="${m.avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                <div>
-                    <span style="font-weight:bold; font-size:14px; color:#fff;">${m.user}</span> <span style="font-size:10px; color:#72767d;">Bugün</span>
-                    <div style="color:#dcddde; margin-top:4px; font-size:15px;">${m.text}</div>
-                </div>
+            <div id="chat-stream" style="flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:16px;">
+                ${channelMessages.map(m => `
+                    <div style="display:flex; gap:12px; align-items:flex-start;">
+                        <img src="${m.avatar}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border: 1px solid #00e5bc;">
+                        <div>
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <span style="font-weight:700; font-size:14px; color:#fff;">${m.user}</span>
+                                <span style="font-size:10px; color:#65697b;">Şimdi</span>
+                            </div>
+                            <div style="color:#d1d2d6; margin-top:4px; font-size:14px;">${m.text}</div>
+                        </div>
+                    </div>
+                `).join('')}
             </div>
-        `).join('');
 
-        mainContent.innerHTML = `
-            <div style="padding: 15px; background: #36393f; font-weight:bold; border-bottom: 1px solid #202225;"># ${currentActiveChannel}</div>
-            <div id="server-chat-box" style="flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:15px;">${msgsHTML}</div>
-            <div style="padding:20px; background:#36393f;">
-                <div style="background:#40444b; border-radius:8px; padding:10px; display:flex;">
-                    <input type="text" id="srv-msg-input" placeholder="#${currentActiveChannel} kanalına mesaj gönder" style="margin:0; background:transparent; border:none; flex:1; color:white;">
-                    <button onclick="sendServerMessage('${server.id}')" style="width:auto; padding:0 20px; background:#5865F2;">Gönder</button>
+            <div style="padding:12px 16px; background:#1c1e28;">
+                <div style="background:#252836; border-radius:10px; padding:8px 12px; display:flex; align-items:center; border: 1px solid #2f3345;">
+                    <input type="text" id="msg-input" placeholder="#${activeChannel} odasına yaz..." style="margin:0; background:transparent; border:none; flex:1; color:white; padding:4px;">
+                    <button onclick="sendGlobalMessage()" style="background:#00e5bc; color:#12141c; padding:6px 16px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Gönder</button>
                 </div>
             </div>
         `;
-        setTimeout(() => { let c = document.getElementById('server-chat-box'); if(c) c.scrollTop = c.scrollHeight; }, 50);
+        setTimeout(() => { let c = document.getElementById('chat-stream'); if(c) c.scrollTop = c.scrollHeight; }, 30);
+
+    } else if (activeTab === 'arkadaslar') {
+        // ARKADAŞLIK VE NİTRO KOD AKTİFLEŞTİRME SAYFASI
+        body.innerHTML = `
+            <div style="padding:20px; background:#1c1e28; border-bottom:1px solid #282a36; display:flex; flex-direction:column; gap:12px;">
+                <h3 style="font-size:18px;">👥 Arkadaşlarım (${friends.length})</h3>
+                <div style="display:flex; gap:8px;">
+                    <button onclick="addFriendPrompt()" style="background:#00e5bc; color:#12141c; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; flex:1;">+ Arkadaş Ekle</button>
+                </div>
+                <div style="border-top: 1px solid #282a36; padding-top:12px; display:flex; flex-direction:column; gap:6px;">
+                    <label style="color:#ff73fa; font-weight:bold; font-size:12px;">PRO NİTRO KODU AKTİFLEŞTİR</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="nitro-code" placeholder="/lunahub2026" style="flex:1; padding:10px;">
+                        <button onclick="claimNitroCode()" style="background:#ff73fa; color:white; border:none; padding:0 16px; border-radius:10px; font-weight:bold; cursor:pointer;">Kodu Kullan</button>
+                    </div>
+                </div>
+            </div>
+            <div style="padding:16px; display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex:1;">
+                ${friends.map(f => `
+                    <div style="padding:14px; background:#1c1e28; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #282a36;">
+                        <span style="font-weight:600;">👤 ${f}</span>
+                        <span style="color:#00e5bc; font-size:12px;">● Aktif</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+    } else if (activeTab === 'ayarlar') {
+        // CİHAZDAN DOSYA / GIF YÜKLEMELİ PROFIL AYARLARI (1. ve 2. Resmin Birebir Aynısı)
+        let badge = currentUser.hasNitro ? `<span style="background:#ff73fa; color:white; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold;">NİTRO ÜYESİ</span>` : `<span style="background:#555; color:#aaa; padding:3px 8px; border-radius:6px; font-size:11px;">Standart Üye</span>`;
+        if (currentUser.role === 'kurucu') badge += ` <span style="background:#00e5bc; color:#12141c; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold; margin-left:4px;">KURUCU</span>`;
+
+        body.innerHTML = `
+            <div style="padding: 16px; background:#1c1e28; border-bottom:1px solid #282a36; font-weight:700; font-size:18px;">⚙️ Kullanıcı Ayarları</div>
+            
+            <div style="flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:20px;">
+                <div style="background:#1c1e28; border-radius:14px; padding:20px; border:1px solid #282a36; position:relative;">
+                    
+                    <div id="banner-preview" style="width:100%; height:110px; border-radius:8px; background: ${currentUser.banner.startsWith('http') ? 'url('+currentUser.banner+') center/cover no-repeat' : currentUser.banner}; margin-bottom:50px; position:relative;">
+                        <img id="avatar-preview" src="${currentUser.avatar}" style="width:75px; height:75px; border-radius:50%; border:4px solid #1c1e28; position:absolute; bottom:-35px; left:20px; object-fit:cover;">
+                    </div>
+                    
+                    <div style="margin-top:10px;">
+                        <h3 style="font-size:20px; font-weight:700; color:#fff;">${currentUser.username}</h3>
+                        <p style="color:#9aa0a6; font-size:13px; margin-bottom:12px;">@${currentUser.username}patates</p>
+                        <div style="margin-bottom:15px;">${badge}</div>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:12px; border-top:1px solid #252836; padding-top:12px; font-size:14px;">
+                        <div><span style="color:#9aa0a6; font-size:11px; display:block; font-weight:bold;">GÖRÜNEN AD</span><strong>${currentUser.username}</strong></div>
+                        <div><span style="color:#9aa0a6; font-size:11px; display:block; font-weight:bold;">E-POSTA</span><strong>${currentUser.email}</strong></div>
+                        <div><span style="color:#9aa0a6; font-size:11px; display:block; font-weight:bold;">ÜYELİK TARİHİ</span><strong style="color:#00e5bc;">${currentUser.joinDate || "17 Mayıs 2026"}</strong></div>
+                    </div>
+
+                    <div style="border-top:1px solid #252836; padding-top:16px; margin-top:16px;">
+                        <h4 style="color:#00e5bc; font-size:13px; font-weight:bold; margin-bottom:12px; text-transform:uppercase;">Cihazından Kişiselleştir (GIF / Resim)</h4>
+                        
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <div>
+                                <label style="display:block; font-size:12px; color:#9aa0a6; margin-bottom:4px; font-weight:bold;">GIF Profil Simgesi Yükle:</label>
+                                <input type="file" id="upload-avatar-input" accept="image/*" style="background:#252836; padding:8px; border-radius:6px; font-size:12px; width:100%;">
+                            </div>
+                            
+                            <div>
+                                <label style="display:block; font-size:12px; color:#9aa0a6; margin-bottom:4px; font-weight:bold;">GIF Profil Banneri Yükle:</label>
+                                <input type="file" id="upload-banner-input" accept="image/*" style="background:#252836; padding:8px; border-radius:6px; font-size:12px; width:100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="localStorage.removeItem('currentUser'); location.reload();" style="background:#ff4d4d; color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer; width:100%;">Oturumu Kapat (Çıkış Yap)</button>
+            </div>
+        `;
+
+        // Dosya yükleme işlemcilerini bağlayalım (Dosyayı Base64 formatına çevirip hafızaya gömer, böylece GIF'ler lokal kalır)
+        setupLocalFileUploads();
+    } else {
+        // DİĞER SEKME TUTUCULARI
+        body.innerHTML = `<div style="padding:40px; text-align:center; color:#9aa0a6;">Bu alan entegrasyon aşamasındadır. Alt menüden <strong>Sohbet</strong> veya <strong>Ayarlar</strong> sekmesine geçiş yapabilirsiniz.</div>`;
     }
 }
 
-// --- ARKADAŞ EKLEME SİSTEMİ ---
-function addFriendPrompt() {
-    let name = prompt("Eklemek istediğiniz arkadaşın kullanıcı adını yazın:");
-    if(!name) return;
-    let friends = JSON.parse(localStorage.getItem('friends')) || [];
-    if(friends.includes(name)) { alert("Bu kişi zaten arkadaşınız!"); return; }
-    friends.push(name);
-    localStorage.setItem('friends', JSON.stringify(friends));
-    switchTab('friends-tab');
+// --- SUNUCU KANAL KURMA MANTIĞI ---
+function createNewChannelPrompt() {
+    let channelName = prompt("Yeni kanal adını girin (Örn: kod-paylaşım):");
+    if (!channelName) return;
+    channelName = channelName.toLowerCase().replace(/\s+/g, '-');
+    let servers = JSON.parse(localStorage.getItem('servers'));
+    servers[0].channels.push(channelName);
+    localStorage.setItem('servers', JSON.stringify(servers));
+    activeChannel = channelName;
+    renderTabContent();
 }
 
-// --- SUNUCUYA MESAJ GÖNDERME ---
-function sendServerMessage(serverId) {
-    const input = document.getElementById('srv-msg-input');
+// --- MESAJ GÖNDERME SİSTEMİ ---
+function sendGlobalMessage() {
+    const input = document.getElementById('msg-input');
     if(!input || input.value.trim() === "") return;
-
-    let servers = JSON.parse(localStorage.getItem('servers')) || [];
-    let serverIndex = servers.findIndex(s => s.id === serverId);
+    
+    let servers = JSON.parse(localStorage.getItem('servers'));
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-    if(serverIndex === -1) return;
-
-    if(!servers[serverIndex].messages) servers[serverIndex].messages = [];
-    
-    servers[serverIndex].messages.push({
+    servers[0].messages.push({
         user: currentUser.username,
         avatar: currentUser.avatar,
-        channel: currentActiveChannel,
+        channel: activeChannel,
         text: input.value.trim()
     });
 
     localStorage.setItem('servers', JSON.stringify(servers));
     input.value = "";
-    switchTab(`server-${serverId}`);
+    renderTabContent();
 }
 
-// --- GIF'Lİ PROFİL, BANNER VE NİTRO ALMA SİSTEMİ ---
-function claimNitro() {
-    const code = document.getElementById('nitro-code-input').value.trim();
-    if (code === "/lunahub2026") {
+// --- ARKADAŞ EKLEME ---
+function addFriendPrompt() {
+    let name = prompt("Eklenecek kişinin kullanıcı adını yazın:");
+    if(!name) return;
+    let friends = JSON.parse(localStorage.getItem('friends')) || [];
+    if(friends.includes(name)) { alert("Bu kişi zaten listenizde."); return; }
+    friends.push(name);
+    localStorage.setItem('friends', JSON.stringify(friends));
+    renderTabContent();
+}
+
+// --- NİTRO KODU AKTİFLEŞTİRİCİ ---
+function claimNitroCode() {
+    const code = document.getElementById('nitro-code').value.trim();
+    if(code === "/lunahub2026") {
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         let users = JSON.parse(localStorage.getItem('users'));
         
         currentUser.hasNitro = true;
-        currentUser.avatar = "https://i.gifer.com/ZZ5H.gif";
-        currentUser.banner = "https://i.gifer.com/4V0b.gif";
-
+        currentUser.avatar = "https://i.gifer.com/ZZ5H.gif"; // Varsayılan Başlangıç Nitro GIF'i
+        currentUser.banner = "https://i.gifer.com/4V0b.gif"; // Varsayılan Başlangıç Nitro Banner GIF'i
+        
         let idx = users.findIndex(u => u.username === currentUser.username);
         if(idx !== -1) users[idx] = currentUser;
         
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         localStorage.setItem('users', JSON.stringify(users));
-
-        alert("🎉 TEBRİKLER! /lunahub2026 Kodunu Kullandın Ve Klasik Nitro Profil Özellikleri Tanımlandı! Artık Profilinde GIF Kullanabilirsin.");
-        loadMainInterface();
+        
+        alert("🎉 Harika! Kodu başarıyla kullandın. Klasik Nitro aktif edildi! Artık ayarlardan kendi özel GIF'lerini yükleyebilirsin.");
+        renderTabContent();
     } else {
-        alert("Geçersiz Nitro Kodu!");
+        alert("Hatalı veya geçersiz Nitro kodu!");
     }
 }
 
-function openProfileSettings() {
+// --- CİHAZDAN DOSYA / GIF OKUMA ALGORİTMASI ---
+function setupLocalFileUploads() {
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (!currentUser.hasNitro) {
-        alert("Profilini değiştirmek ve GIF eklemek için öncelikle Nitro aktif etmelisin! Kodu kullan kısmına /lunahub2026 yaz.");
-        return;
-    }
-
-    let newAvatar = prompt("GIF veya Resim Profil URL'si girin:", currentUser.avatar);
-    let newBanner = prompt("GIF veya Resim Üst Banner URL'si girin:", currentUser.banner);
-
-    if(newAvatar) currentUser.avatar = newAvatar;
-    if(newBanner) currentUser.banner = newBanner;
-
     let users = JSON.parse(localStorage.getItem('users'));
-    let idx = users.findIndex(u => u.username === currentUser.username);
-    if(idx !== -1) users[idx] = currentUser;
+    let userIndex = users.findIndex(u => u.username === currentUser.username);
 
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    localStorage.setItem('users', JSON.stringify(users));
-    
-    alert("Profil Özellikleri Başarıyla Güncellendi!");
-    loadMainInterface();
-                                         }
-            
+    // Profil Fotoğrafı Dosya Seçimi
+    const avatarInput = document.getElementById('upload-avatar-input');
+    if(avatarInput) {
+        avatarInput.addEventListener('c
