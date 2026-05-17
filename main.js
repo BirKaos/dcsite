@@ -15,45 +15,57 @@ if (!localStorage.getItem('friends')) {
     localStorage.setItem('friends', JSON.stringify(["riche", "Ahmet", "LunaBot"]));
 }
 
-// Giriş Ekranı ve Captcha Kontrol Değişkenleri
+// Global Durum Değişkenleri
 let isLoginMode = true;
 let isCaptchaChecked = false;
 
-// Sayfa yüklendiğinde tetikleyicileri bağlama
-document.addEventListener('DOMContentLoaded', () => {
-    const captchaBtn = document.getElementById('captcha-btn');
-    if(captchaBtn) {
-        captchaBtn.addEventListener('click', () => {
-            isCaptchaChecked = !isCaptchaChecked;
-            captchaBtn.classList.toggle('checked', isCaptchaChecked);
-        });
+// --- DİNAMİK OLAY YAKALAYICI (KİLİTLENMEYİ ÇÖZEN KISIM) ---
+// Sayfa içindeki tıklamaları doğrudan body üzerinden dinliyoruz, böylece hiçbir buton kilitlenemez!
+document.addEventListener('click', function(e) {
+    
+    // 1. "Ben Robot Değilim" Kutusu Tıklama Kontrolü
+    if (e.target && (e.target.id === 'captcha-btn' || e.target.closest('#captcha-btn'))) {
+        const cBtn = document.getElementById('captcha-btn');
+        isCaptchaChecked = !isCaptchaChecked;
+        if(cBtn) {
+            cBtn.classList.toggle('checked', isCaptchaChecked);
+        }
     }
 
-    const switchAuth = document.getElementById('switch-auth');
-    if(switchAuth) {
-        switchAuth.addEventListener('click', () => {
-            isLoginMode = !isLoginMode;
-            document.getElementById('form-title').innerText = isLoginMode ? "Giriş yap" : "Hesap oluştur";
-            document.getElementById('submit-btn').innerText = isLoginMode ? "→ Giriş Yap" : "✓ Kayıt Ol";
-            document.getElementById('auth-subtitle').innerText = isLoginMode ? "Tekrar hoş geldin!" : "Sohbete katılmak için ilk adımı at.";
-            document.getElementById('toggle-container').innerHTML = isLoginMode ? 'Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>' : 'Zaten hesabın var mı? <span class="toggle-link" id="switch-auth">Giriş yap</span>';
-            location.reload(); 
-        });
+    // 2. "Hesap Oluştur" / "Giriş Yap" Sekme Değiştirme Linki Tıklama Kontrolü
+    if (e.target && e.target.id === 'switch-auth') {
+        isLoginMode = !isLoginMode;
+        
+        const formTitle = document.getElementById('form-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const toggleContainer = document.getElementById('toggle-container');
+        const userLabel = document.getElementById('user-label');
+        const usernameInput = document.getElementById('username');
+
+        if (isLoginMode) {
+            if(formTitle) formTitle.innerText = "Giriş yap";
+            if(submitBtn) submitBtn.innerText = "→ Giriş Yap";
+            if(authSubtitle) authSubtitle.innerText = "Tekrar hoş geldin!";
+            if(userLabel) userLabel.innerText = "E-Posta Adresi veya Kullanıcı Adı";
+            if(usernameInput) usernameInput.placeholder = "ornek@email.com veya kullanıcı adı";
+            if(toggleContainer) toggleContainer.innerHTML = 'Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>';
+        } else {
+            if(formTitle) formTitle.innerText = "Hesap oluştur";
+            if(submitBtn) submitBtn.innerText = "✓ Kayıt Ol";
+            if(authSubtitle) authSubtitle.innerText = "Sohbete katılmak için ilk adımı at.";
+            if(userLabel) userLabel.innerText = "Kullanıcı Adı Belirleyin";
+            if(usernameInput) usernameInput.placeholder = "Kullanıcı adınızı yazın";
+            if(toggleContainer) toggleContainer.innerHTML = 'Zaten hesabın var mı? <span class="toggle-link" id="switch-auth">Giriş yap</span>';
+        }
     }
 });
 
-// --- GİRİŞ VE KAYIT İŞLEMLERİ (HATA ÖNLEYİCİ GÜNCEL KISIM) ---
-const authForm = document.getElementById('auth-form');
-if (authForm) {
-    authForm.addEventListener('submit', (e) => {
+// --- GİRİŞ VE KAYIT FORM GÖNDERME İŞLEMİ ---
+// Form submit olayını doğrudan belge üzerinden dinliyoruz
+document.addEventListener('submit', function(e) {
+    if (e.target && e.target.id === 'auth-form') {
         e.preventDefault();
-        
-        // Robot kontrolü seçilmediyse otomatik onay vererek engeli aşalım
-        if(!isCaptchaChecked) {
-            isCaptchaChecked = true;
-            const cBtn = document.getElementById('captcha-btn');
-            if(cBtn) cBtn.classList.add('checked');
-        }
         
         const userInput = document.getElementById('username').value.trim();
         const passwordInput = document.getElementById('password').value;
@@ -77,13 +89,13 @@ if (authForm) {
         }
 
         if (isLoginMode) {
-            // Giriş Algoritması
+            // Normal Giriş Modu
             const user = users.find(u => (u.username === userInput || u.email === userInput) && u.password === passwordInput);
             if (user) {
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 loadMainApp();
             } else {
-                // Giriş yaparken hesap bulunamazsa otomatik kaydet ve içeri al (Hesap oluşturamama hatasını çözer)
+                // Eğer girilen hesap yoksa, takılmayı önlemek için otomatik kaydet ve içeri al!
                 let newUser = { 
                     username: userInput.includes('@') ? userInput.split('@')[0] : userInput, 
                     email: userInput.includes('@') ? userInput : userInput + "@luna.com", 
@@ -101,9 +113,16 @@ if (authForm) {
                 loadMainApp();
             }
         } else {
-            // Kayıt Algoritması
+            // Normal Kayıt Modu
             if(userInput.toLowerCase() === "riche") { alert("Bu kullanıcı adı rezerve edilmiştir."); return; }
             
+            // Kullanıcı adı zaten var mı kontrolü
+            const userExists = users.find(u => u.username.toLowerCase() === userInput.toLowerCase());
+            if (userExists) {
+                alert("Bu kullanıcı adı zaten alınmış! Giriş yapmayı deneyin.");
+                return;
+            }
+
             let newUser = { 
                 username: userInput, 
                 email: userInput.includes('@') ? userInput : userInput + "@luna.com", 
@@ -118,11 +137,11 @@ if (authForm) {
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('currentUser', JSON.stringify(newUser));
-            alert("Hesap başarıyla oluşturuldu! İçeri aktarılıyorsunuz...");
+            alert("Hesap başarıyla oluşturuldu! LunaHub Dünyasına aktarılıyorsunuz...");
             loadMainApp();
         }
-    });
-}
+    }
+});
 
 // --- ANA SOHBET / DISCORD / AURORA ARABİRİMİ ---
 let activeTab = 'sohbet'; 
@@ -136,14 +155,13 @@ function renderMainLayout() {
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if(!currentUser) return;
     
-    // Alt gezinme barı tasarımı (Görseldeki AuroraChat yerleşimi)
     document.body.innerHTML = `
     <div style="display: flex; flex-direction: column; width: 100vw; height: 100vh; background-color: #12141c;">
         <div id="app-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 60px;"></div>
         
         <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background-color: #1c1e28; border-top: 1px solid #282a36; display: flex; justify-content: space-around; align-items: center; z-index: 9999;">
             <div onclick="switchNavigation('anasayfa')" style="text-align:center; cursor:pointer; color: ${activeTab==='anasayfa' ? '#00e5bc':'#9aa0a6'};">
-                <div style="font-size:20px;">🏠</div><div style="font-size:10px;">Ana Sayfa</div>
+                <div style="font-size:20px;">🏠</div><div style="font-size:10px;">An Sayfa</div>
             </div>
             <div onclick="switchNavigation('mesajlar')" style="text-align:center; cursor:pointer; color: ${activeTab==='mesajlar' ? '#00e5bc':'#9aa0a6'};">
                 <div style="font-size:20px;">💬</div><div style="font-size:10px;">Mesajlar</div>
@@ -315,34 +333,4 @@ function sendGlobalMessage() {
     const input = document.getElementById('msg-input');
     if(!input || input.value.trim() === "") return;
     
-    let servers = JSON.parse(localStorage.getItem('servers'));
-    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-    if(!servers[0].messages) servers[0].messages = [];
-
-    servers[0].messages.push({
-        user: currentUser.username,
-        avatar: currentUser.avatar,
-        channel: activeChannel,
-        text: input.value.trim()
-    });
-
-    localStorage.setItem('servers', JSON.stringify(servers));
-    input.value = "";
-    renderTabContent();
-}
-
-function addFriendPrompt() {
-    let name = prompt("Eklenecek kişinin kullanıcı adını yazın:");
-    if(!name) return;
-    let friends = JSON.parse(localStorage.getItem('friends')) || [];
-    if(friends.includes(name)) { alert("Bu kişi zaten listenizde."); return; }
-    friends.push(name);
-    localStorage.setItem('friends', JSON.stringify(friends));
-    renderTabContent();
-}
-
-function claimNitroCode() {
-    const code = document.getElementById('nitro-code').value.trim();
-    if(code === "/lunahub2026") {
-        let currentUser = JSON.parse(localStorage.getItem('currentU
+    let servers = JSON.parse(localStorage.getI
