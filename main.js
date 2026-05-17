@@ -2,7 +2,7 @@
 const FOUNDER_USER = "riche";
 const FOUNDER_PASS = "richeLuna2026";
 
-// Tarayıcı hafızasını ilklendirme
+// Tarayıcı hafızasını ilklendirme (Local Storage)
 if (!localStorage.getItem('users')) {
     localStorage.setItem('users', JSON.stringify([
         { username: FOUNDER_USER, password: FOUNDER_PASS, email: "arapsabunuhamlatan@gmail.com", role: "kurucu", hasNitro: true, avatar: "https://i.gifer.com/ZZ5H.gif", banner: "https://i.gifer.com/4V0b.gif", joinDate: "17 Mayıs 2026" }
@@ -15,28 +15,29 @@ if (!localStorage.getItem('friends')) {
     localStorage.setItem('friends', JSON.stringify(["riche", "Ahmet", "LunaBot"]));
 }
 
-// Global Durum Değişkenleri
+// Global Durum Takip Değişkenleri
 let isLoginMode = true;
 let isCaptchaChecked = false;
 
-// --- DİNAMİK OLAY YAKALAYICI (KİLİTLENMEYİ ÇÖZEN KISIM) ---
-// Sayfa içindeki tıklamaları doğrudan body üzerinden dinliyoruz, böylece hiçbir buton kilitlenemez!
+// --- KİLİTLENMEYİ ÖNLEYEN GLOBAL TIKLAMA DİNLEYİCİSİ ---
 document.addEventListener('click', function(e) {
     
-    // 1. "Ben Robot Değilim" Kutusu Tıklama Kontrolü
+    // 1. reCAPTCHA Kutusuna Tıklanma Kontrolü
     if (e.target && (e.target.id === 'captcha-btn' || e.target.closest('#captcha-btn'))) {
         const cBtn = document.getElementById('captcha-btn');
         isCaptchaChecked = !isCaptchaChecked;
-        if(cBtn) {
+        if (cBtn) {
             cBtn.classList.toggle('checked', isCaptchaChecked);
         }
     }
 
-    // 2. "Hesap Oluştur" / "Giriş Yap" Sekme Değiştirme Linki Tıklama Kontrolü
+    // 2. "Hesap Oluştur" / "Giriş Yap" Linkine Tıklanma Kontrolü (Kesin Çalışan Kısım)
     if (e.target && e.target.id === 'switch-auth') {
-        isLoginMode = !isLoginMode;
+        isLoginMode = !isLoginMode; // Modu değiştir
         
+        // Formdaki dinamik alanları yakalayalım
         const formTitle = document.getElementById('form-title');
+        const formDesc = document.getElementById('form-desc');
         const submitBtn = document.getElementById('submit-btn');
         const authSubtitle = document.getElementById('auth-subtitle');
         const toggleContainer = document.getElementById('toggle-container');
@@ -45,6 +46,7 @@ document.addEventListener('click', function(e) {
 
         if (isLoginMode) {
             if(formTitle) formTitle.innerText = "Giriş yap";
+            if(formDesc) formDesc.innerText = "Hesabına giriş yap ve sohbete katıl";
             if(submitBtn) submitBtn.innerText = "→ Giriş Yap";
             if(authSubtitle) authSubtitle.innerText = "Tekrar hoş geldin!";
             if(userLabel) userLabel.innerText = "E-Posta Adresi veya Kullanıcı Adı";
@@ -52,8 +54,9 @@ document.addEventListener('click', function(e) {
             if(toggleContainer) toggleContainer.innerHTML = 'Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>';
         } else {
             if(formTitle) formTitle.innerText = "Hesap oluştur";
+            if(formDesc) formDesc.innerText = "Sohbete katılmak için ilk adımı at";
             if(submitBtn) submitBtn.innerText = "✓ Kayıt Ol";
-            if(authSubtitle) authSubtitle.innerText = "Sohbete katılmak için ilk adımı at.";
+            if(authSubtitle) authSubtitle.innerText = "Aramıza Katıl!";
             if(userLabel) userLabel.innerText = "Kullanıcı Adı Belirleyin";
             if(usernameInput) usernameInput.placeholder = "Kullanıcı adınızı yazın";
             if(toggleContainer) toggleContainer.innerHTML = 'Zaten hesabın var mı? <span class="toggle-link" id="switch-auth">Giriş yap</span>';
@@ -61,11 +64,16 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// --- GİRİŞ VE KAYIT FORM GÖNDERME İŞLEMİ ---
-// Form submit olayını doğrudan belge üzerinden dinliyoruz
+// --- FORM SUBMIT (GİRİŞ / KAYIT) İŞLEMİ ---
 document.addEventListener('submit', function(e) {
     if (e.target && e.target.id === 'auth-form') {
         e.preventDefault();
+        
+        // Robot kontrolü zorunluluğu
+        if (!isCaptchaChecked) {
+            alert("Lütfen robot olmadığınızı doğrulayın (Kutucuğa tıklayın).");
+            return;
+        }
         
         const userInput = document.getElementById('username').value.trim();
         const passwordInput = document.getElementById('password').value;
@@ -89,37 +97,21 @@ document.addEventListener('submit', function(e) {
         }
 
         if (isLoginMode) {
-            // Normal Giriş Modu
+            // GİRİŞ MODU ALGORİTMASI
             const user = users.find(u => (u.username === userInput || u.email === userInput) && u.password === passwordInput);
             if (user) {
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 loadMainApp();
             } else {
-                // Eğer girilen hesap yoksa, takılmayı önlemek için otomatik kaydet ve içeri al!
-                let newUser = { 
-                    username: userInput.includes('@') ? userInput.split('@')[0] : userInput, 
-                    email: userInput.includes('@') ? userInput : userInput + "@luna.com", 
-                    password: passwordInput, 
-                    role: "user", 
-                    hasNitro: false, 
-                    avatar: "https://status.discordapp.com/static/images/logged_out_avatar.png", 
-                    banner: "#252836", 
-                    joinDate: "17 Mayıs 2026" 
-                };
-                users.push(newUser);
-                localStorage.setItem('users', JSON.stringify(users));
-                localStorage.setItem('currentUser', JSON.stringify(newUser));
-                alert("Hesabınız otomatik olarak oluşturuldu ve giriş yapıldı!");
-                loadMainApp();
+                alert("Hatalı Kullanıcı Adı veya Şifre!");
             }
         } else {
-            // Normal Kayıt Modu
+            // KAYIT MODU ALGORİTMASI
             if(userInput.toLowerCase() === "riche") { alert("Bu kullanıcı adı rezerve edilmiştir."); return; }
             
-            // Kullanıcı adı zaten var mı kontrolü
             const userExists = users.find(u => u.username.toLowerCase() === userInput.toLowerCase());
             if (userExists) {
-                alert("Bu kullanıcı adı zaten alınmış! Giriş yapmayı deneyin.");
+                alert("Bu kullanıcı adı zaten alınmış! Başka bir ad deneyin.");
                 return;
             }
 
@@ -317,7 +309,7 @@ function renderTabContent() {
     }
 }
 
-// --- EK FONKSİYONLAR VE DOSYA YÜKLEME ALTYAPISI ---
+// --- YARDIMCI FONKSİYONLAR VE DOSYA TRANSFERLERİ ---
 function createNewChannelPrompt() {
     let channelName = prompt("Yeni kanal adını girin (Örn: kod-paylaşım):");
     if (!channelName) return;
@@ -333,4 +325,19 @@ function sendGlobalMessage() {
     const input = document.getElementById('msg-input');
     if(!input || input.value.trim() === "") return;
     
-    let servers = JSON.parse(localStorage.getI
+    let servers = JSON.parse(localStorage.getItem('servers'));
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if(!servers[0].messages) servers[0].messages = [];
+
+    servers[0].messages.push({ user: currentUser.username, avatar: currentUser.avatar, channel: activeChannel, text: input.value.trim() });
+    localStorage.setItem('servers', JSON.stringify(servers));
+    input.value = "";
+    renderTabContent();
+}
+
+function addFriendPrompt() {
+    let name = prompt("Eklenecek kişinin kullanıcı adını yazın:");
+    if(!name) return;
+    let friends = JSON.parse(localStorage.getItem('friends')) || [];
+    if(f
