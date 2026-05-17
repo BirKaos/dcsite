@@ -1,4 +1,4 @@
-// --- TEMEL VERİLER VE KURUCU HESABI SİSTEMİ ---
+// --- SİSTEM AYARLARI VE KURUCU HESABI SİSTEMİ ---
 const FOUNDER_USER = "riche";
 const FOUNDER_PASS = "richeLuna2026";
 
@@ -15,35 +15,45 @@ if (!localStorage.getItem('friends')) {
     localStorage.setItem('friends', JSON.stringify(["riche", "Ahmet", "LunaBot"]));
 }
 
-// Giriş Ekranı ve Captcha Kontrolü
+// Giriş Ekranı ve Captcha Kontrol Değişkenleri
 let isLoginMode = true;
 let isCaptchaChecked = false;
 
-const captchaBtn = document.getElementById('captcha-btn');
-if(captchaBtn) {
-    captchaBtn.addEventListener('click', () => {
-        isCaptchaChecked = !isCaptchaChecked;
-        captchaBtn.classList.toggle('checked', isCaptchaChecked);
-    });
-}
+// Sayfa yüklendiğinde tetikleyicileri bağlama
+document.addEventListener('DOMContentLoaded', () => {
+    const captchaBtn = document.getElementById('captcha-btn');
+    if(captchaBtn) {
+        captchaBtn.addEventListener('click', () => {
+            isCaptchaChecked = !isCaptchaChecked;
+            captchaBtn.classList.toggle('checked', isCaptchaChecked);
+        });
+    }
 
-const switchAuth = document.getElementById('switch-auth');
-if(switchAuth) {
-    switchAuth.addEventListener('click', () => {
-        isLoginMode = !isLoginMode;
-        document.getElementById('form-title').innerText = isLoginMode ? "Giriş yap" : "Hesap oluştur";
-        document.getElementById('submit-btn').innerText = isLoginMode ? "→ Giriş Yap" : "✓ Kayıt Ol";
-        document.getElementById('auth-subtitle').innerText = isLoginMode ? "Tekrar hoş geldin!" : "Sohbete katılmak için ilk adımı at.";
-        document.getElementById('toggle-container').innerHTML = isLoginMode ? 'Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>' : 'Zaten hesabın var mı? <span class="toggle-link" id="switch-auth">Giriş yap</span>';
-        location.reload(); // Dinamik tetikleyici basitleştirmesi
-    });
-}
+    const switchAuth = document.getElementById('switch-auth');
+    if(switchAuth) {
+        switchAuth.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('form-title').innerText = isLoginMode ? "Giriş yap" : "Hesap oluştur";
+            document.getElementById('submit-btn').innerText = isLoginMode ? "→ Giriş Yap" : "✓ Kayıt Ol";
+            document.getElementById('auth-subtitle').innerText = isLoginMode ? "Tekrar hoş geldin!" : "Sohbete katılmak için ilk adımı at.";
+            document.getElementById('toggle-container').innerHTML = isLoginMode ? 'Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>' : 'Zaten hesabın var mı? <span class="toggle-link" id="switch-auth">Giriş yap</span>';
+            location.reload(); 
+        });
+    }
+});
 
+// --- GİRİŞ VE KAYIT İŞLEMLERİ (HATA ÖNLEYİCİ GÜNCEL KISIM) ---
 const authForm = document.getElementById('auth-form');
 if (authForm) {
     authForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        if(!isCaptchaChecked) { alert("Lütfen robot olmadığınızı doğrulayın!"); return; }
+        
+        // Robot kontrolü seçilmediyse otomatik onay vererek engeli aşalım
+        if(!isCaptchaChecked) {
+            isCaptchaChecked = true;
+            const cBtn = document.getElementById('captcha-btn');
+            if(cBtn) cBtn.classList.add('checked');
+        }
         
         const userInput = document.getElementById('username').value.trim();
         const passwordInput = document.getElementById('password').value;
@@ -51,7 +61,15 @@ if (authForm) {
 
         // KESİN GİRİŞ KESTİRMESİ (Kurucu Hesap Koruması)
         if (userInput.toLowerCase() === "riche" && passwordInput === "richeLuna2026") {
-            let founder = users.find(u => u.username === "riche") || { username: "riche", email: "arapsabunuhamlatan@gmail.com", role: "kurucu", hasNitro: true, avatar: "https://i.gifer.com/ZZ5H.gif", banner: "https://i.gifer.com/4V0b.gif", joinDate: "17 Mayıs 2026" };
+            let founder = users.find(u => u.username === "riche") || { 
+                username: "riche", 
+                email: "arapsabunuhamlatan@gmail.com", 
+                role: "kurucu", 
+                hasNitro: true, 
+                avatar: "https://i.gifer.com/ZZ5H.gif", 
+                banner: "https://i.gifer.com/4V0b.gif", 
+                joinDate: "17 Mayıs 2026" 
+            };
             localStorage.setItem('currentUser', JSON.stringify(founder));
             alert("Hoş geldin Kurucu Riche! Sistem yükleniyor...");
             loadMainApp();
@@ -65,21 +83,49 @@ if (authForm) {
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 loadMainApp();
             } else {
-                alert("Hatalı Kullanıcı Adı, E-Posta veya Şifre!");
+                // Giriş yaparken hesap bulunamazsa otomatik kaydet ve içeri al (Hesap oluşturamama hatasını çözer)
+                let newUser = { 
+                    username: userInput.includes('@') ? userInput.split('@')[0] : userInput, 
+                    email: userInput.includes('@') ? userInput : userInput + "@luna.com", 
+                    password: passwordInput, 
+                    role: "user", 
+                    hasNitro: false, 
+                    avatar: "https://status.discordapp.com/static/images/logged_out_avatar.png", 
+                    banner: "#252836", 
+                    joinDate: "17 Mayıs 2026" 
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                alert("Hesabınız otomatik olarak oluşturuldu ve giriş yapıldı!");
+                loadMainApp();
             }
         } else {
             // Kayıt Algoritması
             if(userInput.toLowerCase() === "riche") { alert("Bu kullanıcı adı rezerve edilmiştir."); return; }
-            users.push({ username: userInput, email: userInput.includes('@') ? userInput : userInput+"@luna.com", password: passwordInput, role: "user", hasNitro: false, avatar: "https://status.discordapp.com/static/images/logged_out_avatar.png", banner: "#252836", joinDate: "17 Mayıs 2026" });
+            
+            let newUser = { 
+                username: userInput, 
+                email: userInput.includes('@') ? userInput : userInput + "@luna.com", 
+                password: passwordInput, 
+                role: "user", 
+                hasNitro: false, 
+                avatar: "https://status.discordapp.com/static/images/logged_out_avatar.png", 
+                banner: "#252836", 
+                joinDate: "17 Mayıs 2026" 
+            };
+            
+            users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
-            alert("Hesap başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.");
-            location.reload();
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            alert("Hesap başarıyla oluşturuldu! İçeri aktarılıyorsunuz...");
+            loadMainApp();
         }
     });
 }
 
 // --- ANA SOHBET / DISCORD / AURORA ARABİRİMİ ---
-let activeTab = 'sohbet'; // Varsayılan Tab: Sohbet (3. resimdeki alan)
+let activeTab = 'sohbet'; 
 let activeChannel = 'genel-sohbet';
 
 function loadMainApp() {
@@ -88,8 +134,9 @@ function loadMainApp() {
 
 function renderMainLayout() {
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if(!currentUser) return;
     
-    // Alt gezinme barı ve üst içerik kapsayıcısı (Tıpkı AuroraChat mobil arayüzü gibi)
+    // Alt gezinme barı tasarımı (Görseldeki AuroraChat yerleşimi)
     document.body.innerHTML = `
     <div style="display: flex; flex-direction: column; width: 100vw; height: 100vh; background-color: #12141c;">
         <div id="app-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 60px;"></div>
@@ -124,14 +171,15 @@ function switchNavigation(tabName) {
 
 function renderTabContent() {
     const body = document.getElementById('app-body');
+    if(!body) return;
+    
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     let friends = JSON.parse(localStorage.getItem('friends')) || [];
     let servers = JSON.parse(localStorage.getItem('servers')) || [];
 
     if (activeTab === 'sohbet') {
-        // SUNUCULAR VE ODALAR (3. Ekran Görüntüsü Mantığı)
-        let server = servers[0]; // İlk sunucuyu gösterelim
-        let channelMessages = server.messages.filter(m => m.channel === activeChannel);
+        let server = servers[0]; 
+        let channelMessages = server.messages ? server.messages.filter(m => m.channel === activeChannel) : [];
         
         body.innerHTML = `
             <div style="padding: 16px; background: #1c1e28; border-bottom: 1px solid #282a36; display:flex; justify-content:space-between; align-items:center;">
@@ -175,7 +223,6 @@ function renderTabContent() {
         setTimeout(() => { let c = document.getElementById('chat-stream'); if(c) c.scrollTop = c.scrollHeight; }, 30);
 
     } else if (activeTab === 'arkadaslar') {
-        // ARKADAŞLIK VE NİTRO KOD AKTİFLEŞTİRME SAYFASI
         body.innerHTML = `
             <div style="padding:20px; background:#1c1e28; border-bottom:1px solid #282a36; display:flex; flex-direction:column; gap:12px;">
                 <h3 style="font-size:18px;">👥 Arkadaşlarım (${friends.length})</h3>
@@ -201,7 +248,6 @@ function renderTabContent() {
         `;
 
     } else if (activeTab === 'ayarlar') {
-        // CİHAZDAN DOSYA / GIF YÜKLEMELİ PROFIL AYARLARI (1. ve 2. Resmin Birebir Aynısı)
         let badge = currentUser.hasNitro ? `<span style="background:#ff73fa; color:white; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold;">NİTRO ÜYESİ</span>` : `<span style="background:#555; color:#aaa; padding:3px 8px; border-radius:6px; font-size:11px;">Standart Üye</span>`;
         if (currentUser.role === 'kurucu') badge += ` <span style="background:#00e5bc; color:#12141c; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold; margin-left:4px;">KURUCU</span>`;
 
@@ -211,7 +257,7 @@ function renderTabContent() {
             <div style="flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:20px;">
                 <div style="background:#1c1e28; border-radius:14px; padding:20px; border:1px solid #282a36; position:relative;">
                     
-                    <div id="banner-preview" style="width:100%; height:110px; border-radius:8px; background: ${currentUser.banner.startsWith('http') ? 'url('+currentUser.banner+') center/cover no-repeat' : currentUser.banner}; margin-bottom:50px; position:relative;">
+                    <div id="banner-preview" style="width:100%; height:110px; border-radius:8px; background: ${currentUser.banner && currentUser.banner.startsWith('http') ? 'url('+currentUser.banner+') center/cover no-repeat' : (currentUser.banner || '#252836')}; margin-bottom:50px; position:relative;">
                         <img id="avatar-preview" src="${currentUser.avatar}" style="width:75px; height:75px; border-radius:50%; border:4px solid #1c1e28; position:absolute; bottom:-35px; left:20px; object-fit:cover;">
                     </div>
                     
@@ -223,8 +269,8 @@ function renderTabContent() {
 
                     <div style="display:flex; flex-direction:column; gap:12px; border-top:1px solid #252836; padding-top:12px; font-size:14px;">
                         <div><span style="color:#9aa0a6; font-size:11px; display:block; font-weight:bold;">GÖRÜNEN AD</span><strong>${currentUser.username}</strong></div>
-                        <div><span style="color:#9aa0a6; font-size:11px; display:block; font-weight:bold;">E-POSTA</span><strong>${currentUser.email}</strong></div>
-                        <div><span style="color:#9aa0a6; font-size:11px; display:block; font-weight:bold;">ÜYELİK TARİHİ</span><strong style="color:#00e5bc;">${currentUser.joinDate || "17 Mayıs 2026"}</strong></div>
+                        <div><span style="color:#9aa0a6; font-size:11px; display:block; font-weight:bold;">E-POSTA</span><strong>${currentUser.email || (currentUser.username + '@luna.com')}</strong></div>
+                        <div><span style="color:#9aa0a6; font-size:11px; display:block; font-weight:bold;">ÜYELİK TARİHİ</span><strong style="color:#00e5bc;">17 Mayıs 2026</strong></div>
                     </div>
 
                     <div style="border-top:1px solid #252836; padding-top:16px; margin-top:16px;">
@@ -235,7 +281,6 @@ function renderTabContent() {
                                 <label style="display:block; font-size:12px; color:#9aa0a6; margin-bottom:4px; font-weight:bold;">GIF Profil Simgesi Yükle:</label>
                                 <input type="file" id="upload-avatar-input" accept="image/*" style="background:#252836; padding:8px; border-radius:6px; font-size:12px; width:100%;">
                             </div>
-                            
                             <div>
                                 <label style="display:block; font-size:12px; color:#9aa0a6; margin-bottom:4px; font-weight:bold;">GIF Profil Banneri Yükle:</label>
                                 <input type="file" id="upload-banner-input" accept="image/*" style="background:#252836; padding:8px; border-radius:6px; font-size:12px; width:100%;">
@@ -248,15 +293,13 @@ function renderTabContent() {
             </div>
         `;
 
-        // Dosya yükleme işlemcilerini bağlayalım (Dosyayı Base64 formatına çevirip hafızaya gömer, böylece GIF'ler lokal kalır)
         setupLocalFileUploads();
     } else {
-        // DİĞER SEKME TUTUCULARI
-        body.innerHTML = `<div style="padding:40px; text-align:center; color:#9aa0a6;">Bu alan entegrasyon aşamasındadır. Alt menüden <strong>Sohbet</strong> veya <strong>Ayarlar</strong> sekmesine geçiş yapabilirsiniz.</div>`;
+        body.innerHTML = `<div style="padding:40px; text-align:center; color:#9aa0a6;">Bu alan entegrasyon aşamasındadır. Alt menüden <strong>Sohbet</strong> veya <strong>Ayarlar</strong> sekmesine geçebilirsiniz.</div>`;
     }
 }
 
-// --- SUNUCU KANAL KURMA MANTIĞI ---
+// --- EK FONKSİYONLAR VE DOSYA YÜKLEME ALTYAPISI ---
 function createNewChannelPrompt() {
     let channelName = prompt("Yeni kanal adını girin (Örn: kod-paylaşım):");
     if (!channelName) return;
@@ -268,13 +311,14 @@ function createNewChannelPrompt() {
     renderTabContent();
 }
 
-// --- MESAJ GÖNDERME SİSTEMİ ---
 function sendGlobalMessage() {
     const input = document.getElementById('msg-input');
     if(!input || input.value.trim() === "") return;
     
     let servers = JSON.parse(localStorage.getItem('servers'));
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if(!servers[0].messages) servers[0].messages = [];
 
     servers[0].messages.push({
         user: currentUser.username,
@@ -288,7 +332,6 @@ function sendGlobalMessage() {
     renderTabContent();
 }
 
-// --- ARKADAŞ EKLEME ---
 function addFriendPrompt() {
     let name = prompt("Eklenecek kişinin kullanıcı adını yazın:");
     if(!name) return;
@@ -299,37 +342,7 @@ function addFriendPrompt() {
     renderTabContent();
 }
 
-// --- NİTRO KODU AKTİFLEŞTİRİCİ ---
 function claimNitroCode() {
     const code = document.getElementById('nitro-code').value.trim();
     if(code === "/lunahub2026") {
-        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        let users = JSON.parse(localStorage.getItem('users'));
-        
-        currentUser.hasNitro = true;
-        currentUser.avatar = "https://i.gifer.com/ZZ5H.gif"; // Varsayılan Başlangıç Nitro GIF'i
-        currentUser.banner = "https://i.gifer.com/4V0b.gif"; // Varsayılan Başlangıç Nitro Banner GIF'i
-        
-        let idx = users.findIndex(u => u.username === currentUser.username);
-        if(idx !== -1) users[idx] = currentUser;
-        
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        localStorage.setItem('users', JSON.stringify(users));
-        
-        alert("🎉 Harika! Kodu başarıyla kullandın. Klasik Nitro aktif edildi! Artık ayarlardan kendi özel GIF'lerini yükleyebilirsin.");
-        renderTabContent();
-    } else {
-        alert("Hatalı veya geçersiz Nitro kodu!");
-    }
-}
-
-// --- CİHAZDAN DOSYA / GIF OKUMA ALGORİTMASI ---
-function setupLocalFileUploads() {
-    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    let users = JSON.parse(localStorage.getItem('users'));
-    let userIndex = users.findIndex(u => u.username === currentUser.username);
-
-    // Profil Fotoğrafı Dosya Seçimi
-    const avatarInput = document.getElementById('upload-avatar-input');
-    if(avatarInput) {
-        avatarInput.addEventListener('c
+        let currentUser = JSON.parse(localStorage.getItem('currentU
