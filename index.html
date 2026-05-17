@@ -3,34 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LunaHub - Discord & Telegram Hybrid</title>
+    <title>LunaHub - Konuş, Sohbet Et</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #0e1621; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .auth-box { background-color: #17212b; padding: 40px; border-radius: 10px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 1px solid #2b5278; }
-        .logo { margin-bottom: 15px; font-size: 28px; font-weight: bold; color: #5288c1; }
-        h2 { margin-bottom: 20px; color: #fff; font-size: 22px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #24303f; border: 1px solid #2f3e4e; border-radius: 6px; color: white; outline: none; }
-        input:focus { border-color: #5288c1; }
-        button { width: 100%; padding: 12px; background: #5288c1; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
-        button:hover { background: #4374a5; }
-        p { margin-top: 15px; font-size: 14px; color: #7f91a4; }
-        span { color: #5288c1; cursor: pointer; text-decoration: underline; }
-        .info-note { font-size: 11px; color: #5288c1; margin-top: 10px; background: rgba(82, 136, 193, 0.1); padding: 5px; border-radius: 4px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #12141c; color: #f1f2f3; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        .auth-container { background-color: #1c1e28; padding: 32px 24px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); border: 1px solid #282a36; text-align: center; }
+        .brand-logo { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 28px; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
+        .brand-logo span { color: #00e5bc; }
+        .subtitle { color: #9aa0a6; font-size: 15px; margin-bottom: 32px; }
+        
+        h2 { font-size: 22px; font-weight: 600; text-align: left; margin-bottom: 20px; color: #ffffff; }
+        .form-group { text-align: left; margin-bottom: 18px; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #9aa0a6; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        input { width: 100%; padding: 14px; background-color: #252836; border: 1px solid #2f3345; border-radius: 10px; color: #ffffff; font-size: 15px; outline: none; transition: all 0.2s; }
+        input:focus { border-color: #00e5bc; background-color: #292c3d; }
+        
+        /* reCAPTCHA Alanı */
+        .captcha-box { background: #252836; border: 1px solid #2f3345; padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .captcha-left { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #ffffff; }
+        .captcha-check { width: 22px; height: 22px; border: 2px solid #00e5bc; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: transparent; }
+        .captcha-check.checked::after { content: "✓"; color: #12141c; font-weight: bold; font-size: 14px; }
+        .captcha-check.checked { background: #00e5bc; }
+        .captcha-right { text-align: right; font-size: 10px; color: #9aa0a6; }
+        
+        .submit-btn { width: 100%; padding: 14px; background-color: #00e5bc; border: none; border-radius: 12px; color: #12141c; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .submit-btn:hover { background-color: #00c4a0; }
+        
+        .toggle-text { margin-top: 24px; font-size: 14px; color: #9aa0a6; }
+        .toggle-link { color: #00e5bc; cursor: pointer; font-weight: 600; text-decoration: none; }
+        .toggle-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
-<div class="auth-box" id="auth-container">
-    <div class="logo">🌙 LunaHub</div>
-    <h2 id="title">Giriş Yap</h2>
+<div class="auth-container" id="auth-box">
+    <div class="brand-logo"><span>✦</span> LunaHub</div>
+    <div class="subtitle" id="auth-subtitle">Tekrar hoş geldin!</div>
+    <h2 id="form-title">Giriş yap</h2>
+    
     <form id="auth-form">
-        <input type="text" id="username" placeholder="Kullanıcı Adı veya Gmail" required>
-        <input type="password" id="password" placeholder="Şifreniz" required>
-        <button type="submit" id="submit-btn">Giriş Yap</button>
+        <div class="form-group">
+            <label id="user-label">E-Posta Adresi veya Kullanıcı Adı</label>
+            <input type="text" id="username" placeholder="ornek@email.com veya kullanıcı adı" required>
+        </div>
+        <div class="form-group">
+            <label>Şifre</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        
+        <div class="captcha-box">
+            <div class="captcha-left">
+                <div class="captcha-check" id="captcha-btn"></div>
+                <span>Ben robot değilim</span>
+            </div>
+            <div class="captcha-right">
+                <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" width="24" style="display:block; margin:0 auto 2px;"><br>reCAPTCHA
+            </div>
+        </div>
+        
+        <button type="submit" class="submit-btn" id="submit-btn">→ Giriş Yap</button>
     </form>
-    <p id="toggle-p">Hesabın yok mu? <span id="toggle-auth">Kayıt Ol</span></p>
-    <div class="info-note">Kurucu Girişi: Kullanıcı adı "riche" yazarak erişebilirsiniz.</div>
+    
+    <div class="toggle-text" id="toggle-container">
+        Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>
+    </div>
 </div>
 
 <script src="main.js"></script>
