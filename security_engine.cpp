@@ -1,41 +1,29 @@
 #include <iostream>
 #include <string>
-#include <vector>
 
-// Telegram Clone - Mesaj Güvenliği ve Şifreleme Motoru
-class SecurityEngine {
-private:
-    char secureKey = 'K'; // Şifreleme anahtarı
-
+// LunaHub System Security Framework 2026
+class LunaCoreSecurity {
 public:
-    // Mesajı şifreleyen C++ fonksiyonu
-    std::string encryptMessage(std::string message) {
-        std::string encrypted = message;
-        for (size_t i = 0; i < message.size(); i++) {
-            encrypted[i] = message[i] ^ secureKey; // XOR Şifreleme
-        }
-        return encrypted;
-    }
+    std::string founderName = "riche";
+    std::string systemStatus = "AKTIF";
 
-    // Şifrelenmiş mesajı çözen C++ fonksiyonu
-    std::string decryptMessage(std::string encryptedMessage) {
-        return encryptMessage(encryptedMessage); // XOR simetrik olduğu için aynı işlem çözer
+    bool authenticateFounder(std::string name, std::string encryptedPass) {
+        // C++ Şifre Kontrolü Çekirdeği
+        if (name == founderName && encryptedPass == "richeLuna2026") {
+            std::cout << "[GÜVENLİK]: Kurucu Riche Başarıyla Doğrulandı!" << std::endl;
+            return true;
+        }
+        std::cout << "[UYARI]: Yetkisiz Erişim Denemesi Yapıldı!" << std::endl;
+        return false;
     }
 };
 
 int main() {
-    SecurityEngine engine;
+    LunaCoreSecurity core;
+    std::cout << "--- LunaHub C++ Core System Booted ---" << std::endl;
+    std::cout << "Sistem Durumu: " << core.systemStatus << std::endl;
     
-    std::string testMessage = "Selam, bu Telegram klonundan gonderilen gizli bir mesajdir.";
-    
-    // İşlemleri Başlat
-    std::string encrypted = engine.encryptMessage(testMessage);
-    std::string decrypted = engine.decryptMessage(encrypted);
-    
-    std::cout << "--- Telegram Core C++ Security Engine ---" << std::endl;
-    std::cout << "Orjinal Mesaj: " << testMessage << std::endl;
-    std::cout << "Sifrelenmiş Veri: " << encrypted << std::endl;
-    std::cout << "Cozulmus Veri: " << decrypted << std::endl;
-    
+    // Kurucu Giriş Testi
+    core.authenticateFounder("riche", "richeLuna2026");
     return 0;
 }
