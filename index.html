@@ -3,73 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LunaHub - Konuş, Sohbet Et</title>
+    <title>LunaHub - Giriş</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #12141c; color: #f1f2f3; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        
-        .auth-container { background-color: #1c1e28; padding: 32px 24px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); border: 1px solid #282a36; text-align: center; }
-        .brand-logo { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 28px; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
-        .brand-logo span { color: #00e5bc; }
-        .subtitle { color: #9aa0a6; font-size: 15px; margin-bottom: 32px; }
-        
-        h2 { font-size: 22px; font-weight: 600; text-align: left; margin-bottom: 20px; color: #ffffff; }
-        .form-group { text-align: left; margin-bottom: 18px; }
-        label { display: block; font-size: 11px; font-weight: 700; color: #9aa0a6; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
-        input { width: 100%; padding: 14px; background-color: #252836; border: 1px solid #2f3345; border-radius: 10px; color: #ffffff; font-size: 15px; outline: none; transition: all 0.2s; }
-        input:focus { border-color: #00e5bc; background-color: #292c3d; }
-        
-        /* reCAPTCHA Alanı */
-        .captcha-box { background: #252836; border: 1px solid #2f3345; padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-        .captcha-left { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #ffffff; }
-        .captcha-check { width: 22px; height: 22px; border: 2px solid #00e5bc; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: transparent; }
-        .captcha-check.checked::after { content: "✓"; color: #12141c; font-weight: bold; font-size: 14px; }
-        .captcha-check.checked { background: #00e5bc; }
-        .captcha-right { text-align: right; font-size: 10px; color: #9aa0a6; }
-        
-        .submit-btn { width: 100%; padding: 14px; background-color: #00e5bc; border: none; border-radius: 12px; color: #12141c; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .submit-btn:hover { background-color: #00c4a0; }
-        
-        .toggle-text { margin-top: 24px; font-size: 14px; color: #9aa0a6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #12141c; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-container { background-color: #1c1e28; width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 12px; border: 1px solid #282a36; text-align: center; }
+        .logo { font-size: 32px; font-weight: bold; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px; }
+        .logo span { color: #00e5bc; }
+        .subtitle { color: #9aa0a6; font-size: 14px; margin-bottom: 30px; }
+        .form-title { font-size: 24px; font-weight: bold; text-align: left; margin-bottom: 5px; }
+        .form-subtitle { text-align: left; color: #65697b; font-size: 13px; margin-bottom: 20px; }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 11px; color: #9aa0a6; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }
+        .form-group input { width: 100%; background-color: #252836; border: 1px solid #2f3345; padding: 14px; border-radius: 8px; color: white; font-size: 15px; outline: none; transition: border 0.2s; }
+        .form-group input:focus { border-color: #00e5bc; }
+        .captcha-container { background-color: #12141c; border: 1px solid #252836; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; cursor: pointer; user-select: none; }
+        .captcha-left { display: flex; align-items: center; gap: 12px; }
+        .captcha-checkbox { width: 22px; height: 22px; border: 2px solid #555; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: transparent; }
+        .captcha-checkbox::after { content: "✓"; color: #12141c; font-weight: bold; font-size: 14px; display: none; }
+        .captcha-container.checked .captcha-checkbox { background-color: #00e5bc; border-color: #00e5bc; }
+        .captcha-container.checked .captcha-checkbox::after { display: block; }
+        .captcha-text { font-size: 14px; color: #d1d2d6; }
+        .captcha-right { display: flex; flex-direction: column; align-items: center; font-size: 8px; color: #65697b; }
+        .captcha-right img { width: 26px; margin-bottom: 2px; }
+        .submit-btn { width: 100%; background-color: #00e5bc; color: #12141c; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .submit-btn:hover { opacity: 0.9; }
+        .toggle-container { margin-top: 20px; font-size: 14px; color: #9aa0a6; }
         .toggle-link { color: #00e5bc; cursor: pointer; font-weight: 600; text-decoration: none; }
         .toggle-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
-<div class="auth-container" id="auth-box">
-    <div class="brand-logo"><span>✦</span> LunaHub</div>
-    <div class="subtitle" id="auth-subtitle">Tekrar hoş geldin!</div>
-    <h2 id="form-title">Giriş yap</h2>
-    
-    <form id="auth-form">
-        <div class="form-group">
-            <label id="user-label">E-Posta Adresi veya Kullanıcı Adı</label>
-            <input type="text" id="username" placeholder="ornek@email.com veya kullanıcı adı" required>
-        </div>
-        <div class="form-group">
-            <label>Şifre</label>
-            <input type="password" id="password" placeholder="••••••••" required>
-        </div>
+    <div class="auth-container" id="auth-box">
+        <div class="logo">🌙 Luna<span>Hub</span></div>
+        <div class="subtitle" id="auth-subtitle">Tekrar hoş geldin!</div>
         
-        <div class="captcha-box">
-            <div class="captcha-left">
-                <div class="captcha-check" id="captcha-btn"></div>
-                <span>Ben robot değilim</span>
+        <form id="auth-form">
+            <div class="form-title" id="form-title">Giriş yap</div>
+            <div class="form-subtitle" id="form-desc">Hesabına giriş yap ve sohbete katıl</div>
+            
+            <div class="form-group">
+                <label id="user-label">E-Posta Adresi veya Kullanıcı Adı</label>
+                <input type="text" id="username" placeholder="ornek@email.com veya kullanıcı adı" required>
             </div>
-            <div class="captcha-right">
-                <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" width="24" style="display:block; margin:0 auto 2px;"><br>reCAPTCHA
+            
+            <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" id="password" placeholder="••••••••" required>
             </div>
-        </div>
+            
+            <div class="captcha-container" id="captcha-btn">
+                <div class="captcha-left">
+                    <div class="captcha-checkbox"></div>
+                    <div class="captcha-text">Ben robot değilim</div>
+                </div>
+                <div class="captcha-right">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/RecaptchaLogo.svg" alt="recaptcha">
+                    <span>reCAPTCHA</span>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submit-btn">→ Giriş Yap</button>
+        </form>
         
-        <button type="submit" class="submit-btn" id="submit-btn">→ Giriş Yap</button>
-    </form>
-    
-    <div class="toggle-text" id="toggle-container">
-        Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>
+        <div class="toggle-container" id="toggle-container">
+            Hesabın yok mu? <span class="toggle-link" id="switch-auth">Hesap oluştur</span>
+        </div>
     </div>
-</div>
 
-<script src="main.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
