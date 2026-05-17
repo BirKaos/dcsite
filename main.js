@@ -1,6 +1,6 @@
 // --- SİSTEM AYARLARI VE KURUCU HESABI ---
 const FOUNDER_USER = "riche";
-const FOUNDER_PASS = "richeporche@dc"; // Kurucu Şifresi
+const FOUNDER_PASS = "richeLuna2026"; // Kurucu Şifresi
 
 // Başlangıç Veritabanı Kurulumu
 if (!localStorage.getItem('users')) {
@@ -39,17 +39,32 @@ if (toggleAuth) {
     });
 }
 
-// Giriş ve Kayıt İşlemleri
+// Giriş ve Kayıt İşlemleri (KESİN GİRİŞ KESTİRMELİ GÜNCEL KISIM)
 const authForm = document.getElementById('auth-form');
 if (authForm) {
     authForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const userInput = document.getElementById('username').value.trim();
         const passwordInput = document.getElementById('password').value;
-        let users = JSON.parse(localStorage.getItem('users'));
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        // Hileli/Kestirme Yol: Eğer 'riche' yazıp şifreyi doğru girdiysen tarayıcı hafızasına bakmadan direkt içeri al!
+        if (userInput.toLowerCase() === "riche" && passwordInput === "richeLuna2026") {
+            let founderAccount = { 
+                username: "riche", 
+                role: "kurucu", 
+                hasNitro: true, 
+                avatar: "https://i.gifer.com/ZZ5H.gif", 
+                banner: "https://i.gifer.com/4V0b.gif" 
+            };
+            localStorage.setItem('currentUser', JSON.stringify(founderAccount));
+            alert("Hoş geldin Kurucu Riche! Sistem başlatılıyor...");
+            loadMainInterface();
+            return;
+        }
 
         if (!isLogin) {
-            // KAYIT OLMA
+            // KAYIT OLMA MANTIĞI
             if (userInput.toLowerCase() === "riche") {
                 alert("Bu kurucu adını kullanamazsınız!");
                 return;
@@ -62,7 +77,7 @@ if (authForm) {
             alert("Kayıt Başarılı! Giriş yapabilirsiniz.");
             location.reload();
         } else {
-            // GİRİŞ YAPMA
+            // NORMAL KULLANICI GİRİŞİ
             const user = users.find(u => u.username === userInput && u.password === passwordInput);
             if (user) {
                 localStorage.setItem('currentUser', JSON.stringify(user));
@@ -83,23 +98,18 @@ function loadMainInterface() {
 
     document.body.innerHTML = `
     <div style="display: flex; width: 100vw; height: 100vh; background: #2f3136;">
-        <!-- 1. SÜTUN: DISCORD SUNUCU LİSTESİ -->
         <div id="server-list" style="width: 70px; background: #202225; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 10px;">
             <div onclick="switchTab('friends-tab')" style="width: 48px; height: 48px; background: #5865F2; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px;" title="Arkadaşlar">👥</div>
             <div style="width: 32px; height: 2px; background: #36393f;"></div>
-            <!-- Dinamik Sunucular Buraya Gelecek -->
             <div id="dynamic-servers" style="display:flex; flex-direction:column; gap:10px;"></div>
             <div onclick="createNewServerPrompt()" style="width: 48px; height: 48px; background: #36393f; color: #43b581; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 24px; font-weight: bold;" title="Sunucu Ekle">+</div>
         </div>
 
-        <!-- 2. SÜTUN: KANALLAR VEYA ARKADAŞ LİSTESİ -->
         <div style="width: 240px; background: #2f3136; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #202225;">
             <div style="padding: 15px; background: #2f3136; font-weight: bold; border-bottom: 1px solid #202225; box-shadow: 0 1px 2px rgba(0,0,0,0.2);" id="sidebar-header">LunaHub Ana Sayfa</div>
             
-            <!-- Dinamik Alt Liste (Kanallar veya Arkadaşlar) -->
             <div id="sidebar-content" style="flex: 1; padding: 10px; overflow-y: auto;"></div>
 
-            <!-- Kullanıcı Alt Paneli (Discord Tarzı) -->
             <div style="padding: 10px; background: #292b2f; display: flex; align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 8px; cursor:pointer;" onclick="openProfileSettings()">
                     <img src="${currentUser.avatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
@@ -112,7 +122,6 @@ function loadMainInterface() {
             </div>
         </div>
 
-        <!-- 3. SÜTUN: ANA CHAT / İÇERİK ALANI -->
         <div id="main-content" style="flex: 1; background: #36393f; display: flex; flex-direction: column;"></div>
     </div>
     `;
@@ -263,13 +272,11 @@ function claimNitro() {
         let users = JSON.parse(localStorage.getItem('users'));
         
         currentUser.hasNitro = true;
-        // Nitro alındığı için varsayılan olarak harika bir kurucu GIF'i verelim profil için
         currentUser.avatar = "https://i.gifer.com/ZZ5H.gif";
         currentUser.banner = "https://i.gifer.com/4V0b.gif";
 
-        // Veritabanını güncelle
         let idx = users.findIndex(u => u.username === currentUser.username);
-        users[idx] = currentUser;
+        if(idx !== -1) users[idx] = currentUser;
         
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         localStorage.setItem('users', JSON.stringify(users));
@@ -296,12 +303,12 @@ function openProfileSettings() {
 
     let users = JSON.parse(localStorage.getItem('users'));
     let idx = users.findIndex(u => u.username === currentUser.username);
-    users[idx] = currentUser;
+    if(idx !== -1) users[idx] = currentUser;
 
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     localStorage.setItem('users', JSON.stringify(users));
     
     alert("Profil Özellikleri Başarıyla Güncellendi!");
     loadMainInterface();
-            }
+                                         }
             
